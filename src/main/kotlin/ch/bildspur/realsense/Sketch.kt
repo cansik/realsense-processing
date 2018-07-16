@@ -5,7 +5,7 @@ import processing.core.PApplet
 class Sketch : PApplet() {
 
     override fun settings() {
-        size(500, 500)
+        size(640, 480)
     }
 
     lateinit var cam : RealSenseCamera
@@ -17,6 +17,12 @@ class Sketch : PApplet() {
 
     override fun draw() {
         background(0)
+        image(cam.readFrame(),0f, 0f)
+    }
+
+    override fun stop()
+    {
+        cam.stop()
     }
 
     fun startSketch() {
