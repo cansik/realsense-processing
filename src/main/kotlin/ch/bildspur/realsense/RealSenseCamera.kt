@@ -19,8 +19,8 @@ class RealSenseCamera(val applet : PApplet) {
     private lateinit var context : Context
     private lateinit var pipeline : Pipeline
 
-    private val width = 640
-    private val height = 480
+    private val width = 1280
+    private val height = 720
 
     private val image = PImage(width, height, PConstants.RGB)
 
@@ -41,6 +41,7 @@ class RealSenseCamera(val applet : PApplet) {
         pipeline = context.createPipeline()
         val config = Config.create()
         config.enableDevice(device)
+        //config.enableStream(Native.Stream.RS2_STREAM_COLOR, 0, width, height, Native.Format.RS2_FORMAT_RGB8, 30)
         config.enableStream(Native.Stream.RS2_STREAM_DEPTH, 0, width, height, Native.Format.RS2_FORMAT_Z16, 30)
 
         Thread.sleep(1000) // CONCURRENCY BUG SOMEWHERE!
@@ -62,7 +63,7 @@ class RealSenseCamera(val applet : PApplet) {
             // update pixels
             (0 until width * height).forEach {
                 // add grayscale value
-                image.pixels[it] = applet.color(buffer[it].toInt())
+                image.pixels[it] = buffer[it].toInt() //applet.color(buffer[it].toInt())
             }
             image.updatePixels()
 
