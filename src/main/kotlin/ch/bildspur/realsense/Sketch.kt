@@ -8,10 +8,9 @@ class Sketch : PApplet() {
         size(640, 480)
     }
 
-    lateinit var cam : RealSenseCamera
+    val cam = RealSenseCamera(this)
 
     override fun setup() {
-        cam = RealSenseCamera()
         cam.start()
     }
 

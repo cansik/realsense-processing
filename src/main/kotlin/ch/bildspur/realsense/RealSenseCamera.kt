@@ -6,8 +6,10 @@ import org.librealsense.Native
 import org.librealsense.Pipeline
 import processing.core.PImage
 import java.nio.file.Paths
+import processing.core.PApplet
+import processing.core.PConstants
 
-class RealSenseCamera {
+class RealSenseCamera(val applet : PApplet) {
     init {
         // loading native libs
         System.load(Paths.get("lib/realsense/librealsense2.dylib").toAbsolutePath().toString())
@@ -20,7 +22,7 @@ class RealSenseCamera {
     private val width = 640
     private val height = 480
 
-    private val image = PImage(width, height)
+    private val image = PImage(width, height, PConstants.RGB)
 
     fun start()
     {
@@ -59,7 +61,8 @@ class RealSenseCamera {
 
             // update pixels
             (0 until width * height).forEach {
-                image.pixels[it] = buffer[it].toInt()
+                // add grayscale value
+                image.pixels[it] = applet.color(buffer[it].toInt())
             }
             image.updatePixels()
 
