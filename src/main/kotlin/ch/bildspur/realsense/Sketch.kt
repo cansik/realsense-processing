@@ -5,7 +5,7 @@ import processing.core.PApplet
 class Sketch : PApplet() {
 
     override fun settings() {
-        size(640, 480)
+        size(1280, 720)
     }
 
     val cam = RealSenseCamera(this)
