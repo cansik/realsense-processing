@@ -41,6 +41,8 @@ class RealSenseCamera {
         config.enableDevice(device)
         config.enableStream(Native.Stream.RS2_STREAM_DEPTH, 0, width, height, Native.Format.RS2_FORMAT_Z16, 30)
 
+        Thread.sleep(1000) // CONCURRENCY BUG SOMEWHERE!
+
         println("starting device...")
         pipeline.startWithConfig(config)
 
