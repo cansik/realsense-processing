@@ -26,7 +26,8 @@ dependencies {
     compile group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version: '2.3.2'
 
     // realsense
-    compile files('lib/realsense/realsense.jar')
+    //compile files('lib/realsense/realsense.jar')
+    compile files('lib/realsense.jar')
 }
 
 compileKotlin {

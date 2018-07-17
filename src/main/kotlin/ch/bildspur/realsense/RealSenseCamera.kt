@@ -4,18 +4,11 @@ import org.librealsense.Config
 import org.librealsense.Context
 import org.librealsense.Native
 import org.librealsense.Pipeline
-import processing.core.PImage
-import java.nio.file.Paths
 import processing.core.PApplet
 import processing.core.PConstants
+import processing.core.PImage
 
 class RealSenseCamera(val applet : PApplet) {
-    init {
-        // loading native libs
-        System.load(Paths.get("lib/realsense/librealsense2.dylib").toAbsolutePath().toString())
-        System.load(Paths.get("lib/realsense/libnative.dylib").toAbsolutePath().toString())
-    }
-
     private lateinit var context : Context
     private lateinit var pipeline : Pipeline
 
