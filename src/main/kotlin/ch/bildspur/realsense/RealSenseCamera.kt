@@ -61,6 +61,7 @@ class RealSenseCamera(val applet : PApplet) {
             val buffer = frame.frameData
 
             // update pixels
+            image.loadPixels()
             (0 until width * height).forEach {
                 // add grayscale value
                 image.pixels[it] = buffer[it].toInt() //applet.color(buffer[it].toInt())
