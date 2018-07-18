@@ -1,9 +1,8 @@
 # RealSense D400 for Processing
 A proof of concept to use Intel RealSense D400 cameras together with processing.
 
-![Depth Cam Example](readme/depthimage.png)
+![Depth Cam Example](readme/depthimage2.png)
 
-## About
 This project is just a proof of concept on how to use the RealSense D400 cam series together with processing. I am currently working on a Java interface to access the RealSense cameras.
 
 You find the java interface repository here:
