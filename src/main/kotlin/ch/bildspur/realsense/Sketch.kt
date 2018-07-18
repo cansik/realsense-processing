@@ -28,7 +28,7 @@ class Sketch : PApplet() {
 
     override fun draw() {
         background(0)
-        image(cam.readFrame(),0f, 0f)
+        image(cam.readDepthImage(),0f, 0f)
     }
 
     override fun stop()

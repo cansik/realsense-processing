@@ -50,7 +50,7 @@ class RealSenseCamera(val applet : PApplet) {
         println("started!")
     }
 
-    fun readFrame() : PImage
+    fun readDepthImage() : PImage
     {
         val frames = pipeline.waitForFrames(5000)
 
@@ -68,7 +68,11 @@ class RealSenseCamera(val applet : PApplet) {
             (0 until width * height).forEach {
                 val depth = buffer[it].toInt()
                 val grayScale = Sketch.map(depth, 0, 65536 / 50, 255, 0)
-                image.pixels[it] = applet.color(grayScale, 0, 0)
+
+                if(depth > 0)
+                    image.pixels[it] = applet.color(grayScale, 0, 100)
+                else
+                    image.pixels[it] = applet.color(0)
             }
             image.updatePixels()
             frame.release()
