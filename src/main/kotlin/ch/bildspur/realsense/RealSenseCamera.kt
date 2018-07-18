@@ -1,9 +1,6 @@
 package ch.bildspur.realsense
 
-import org.librealsense.Config
-import org.librealsense.Context
-import org.librealsense.Native
-import org.librealsense.Pipeline
+import org.librealsense.*
 import processing.core.PApplet
 import processing.core.PConstants
 import processing.core.PImage
@@ -16,9 +13,12 @@ class RealSenseCamera(val applet : PApplet) {
     private val width = 1280
     private val height = 720
     private val fps = 30
-    private val streamIndex = 0
+    private val depthStreamIndex = 0
+    private val infraredStreamIndex = 0
+    private val colorStreamIndex = 0
 
-    private val image = PImage(width, height, PConstants.RGB)
+    val depthImage = PImage(width, height, PConstants.RGB)
+    val colorImage = PImage(width, height, PConstants.RGB)
 
     fun start()
     {
@@ -37,7 +37,9 @@ class RealSenseCamera(val applet : PApplet) {
         pipeline = context.createPipeline()
         val config = Config.create()
         config.enableDevice(device)
-        config.enableStream(Native.Stream.RS2_STREAM_DEPTH, streamIndex, width, height, Native.Format.RS2_FORMAT_Z16, fps)
+        config.enableStream(Native.Stream.RS2_STREAM_DEPTH, depthStreamIndex, width, height, Native.Format.RS2_FORMAT_Z16, fps)
+        config.enableStream(Native.Stream.RS2_STREAM_COLOR, colorStreamIndex, width, height, Native.Format.RS2_FORMAT_RGB8, fps)
+        //config.enableStream(Native.Stream.RS2_STREAM_INFRARED, infraredStreamIndex, width, height, Native.Format.RS2_FORMAT_RGB8, fps)
 
         Thread.sleep(1000) // CONCURRENCY BUG SOMEWHERE!
 
@@ -47,36 +49,50 @@ class RealSenseCamera(val applet : PApplet) {
         println("started!")
     }
 
-    fun readDepthImage() : PImage
+    fun readStreams()
     {
         val frames = pipeline.waitForFrames(5000)
 
         for (i in 0 until frames.frameCount()) {
             val frame = frames.frame(i)
-            val buffer = frame.frameData.asCharBuffer()
 
-            if(0 == Native.rs2IsFrameExtendableTo(frame.ptr, Native.Extension.RS2_EXTENSION_DEPTH_FRAME.ordinal)) {
-                println("No extension depth frame!")
-                frame.release()
-                continue
-            }
+            if(frame.isExtendableTo(Native.Extension.RS2_EXTENSION_DEPTH_FRAME))
+                readDepthImage(frame)
 
-            image.loadPixels()
-            (0 until width * height).forEach {
-                val depth = buffer[it].toInt()
-                val grayScale = Sketch.map(depth, 0, 65536 / 50, 255, 0)
+            if(frame.isExtendableTo(Native.Extension.RS2_EXTENSION_VIDEO_FRAME))
+                readColorImage(frame)
 
-                if(depth > 0)
-                    image.pixels[it] = applet.color(grayScale, 0, 100)
-                else
-                    image.pixels[it] = applet.color(0)
-            }
-            image.updatePixels()
             frame.release()
         }
         frames.release()
+    }
 
-        return image
+    private fun readDepthImage(frame : Frame)
+    {
+        val buffer = frame.frameData.asCharBuffer()
+
+        depthImage.loadPixels()
+        (0 until width * height).forEach { i ->
+            val depth = buffer[i].toInt()
+            val grayScale = Sketch.map(depth, 0, 65536 / 50, 255, 0)
+
+            if(depth > 0)
+                depthImage.pixels[i] = applet.color(grayScale, 0, 100)
+            else
+                depthImage.pixels[i] = applet.color(0)
+        }
+        depthImage.updatePixels()
+    }
+
+    private fun readColorImage(frame : Frame)
+    {
+        val buffer = frame.frameData
+
+        colorImage.loadPixels()
+        (0 until width * height).forEach { i ->
+            colorImage.pixels[i] = buffer[i].toInt()
+        }
+        colorImage.updatePixels()
     }
 
     fun stop()

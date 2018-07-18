@@ -22,13 +22,23 @@ class Sketch : PApplet() {
 
     val cam = RealSenseCamera(this)
 
+    var camMode = 0
+
     override fun setup() {
         cam.start()
     }
 
     override fun draw() {
+        cam.readStreams()
+
         background(0)
-        image(cam.readDepthImage(),0f, 0f)
+
+        image(when(camMode)
+        {
+            0 -> cam.depthImage
+            1 -> cam.colorImage
+            else -> cam.depthImage
+        }, 0f, 0f)
     }
 
     override fun stop()
@@ -38,5 +48,11 @@ class Sketch : PApplet() {
 
     fun startSketch() {
         runSketch()
+    }
+
+    override fun keyPressed() {
+        super.keyPressed()
+
+        camMode = (camMode + 1) % 2
     }
 }
