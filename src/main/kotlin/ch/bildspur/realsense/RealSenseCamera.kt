@@ -8,6 +8,8 @@ import processing.core.PApplet
 import processing.core.PConstants
 import processing.core.PImage
 import kotlin.math.absoluteValue
+import kotlin.math.max
+import kotlin.math.min
 
 class RealSenseCamera(val applet : PApplet) {
     private lateinit var context : Context
@@ -62,15 +64,13 @@ class RealSenseCamera(val applet : PApplet) {
                 continue
             }
 
-            // update pixels
             image.loadPixels()
             (0 until width * height).forEach {
-                // add grayscale value
-                val depth = buffer[it]
-                image.pixels[it] = applet.color(Sketch.map(depth.toInt().absoluteValue, 0, 65536, 0, 255))
+                val depth = buffer[it].toInt()
+                val grayScale = Sketch.map(depth, 0, 65536 / 50, 255, 0)
+                image.pixels[it] = applet.color(grayScale, 0, 0)
             }
             image.updatePixels()
-
             frame.release()
         }
         frames.release()
