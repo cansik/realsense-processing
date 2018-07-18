@@ -7,9 +7,6 @@ import org.librealsense.Pipeline
 import processing.core.PApplet
 import processing.core.PConstants
 import processing.core.PImage
-import kotlin.math.absoluteValue
-import kotlin.math.max
-import kotlin.math.min
 
 class RealSenseCamera(val applet : PApplet) {
     private lateinit var context : Context
