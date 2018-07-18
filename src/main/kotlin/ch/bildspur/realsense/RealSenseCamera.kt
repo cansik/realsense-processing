@@ -7,13 +7,17 @@ import org.librealsense.Pipeline
 import processing.core.PApplet
 import processing.core.PConstants
 import processing.core.PImage
+import kotlin.math.absoluteValue
 
 class RealSenseCamera(val applet : PApplet) {
     private lateinit var context : Context
     private lateinit var pipeline : Pipeline
 
+    // parameters
     private val width = 1280
     private val height = 720
+    private val fps = 30
+    private val streamIndex = 0
 
     private val image = PImage(width, height, PConstants.RGB)
 
@@ -34,8 +38,7 @@ class RealSenseCamera(val applet : PApplet) {
         pipeline = context.createPipeline()
         val config = Config.create()
         config.enableDevice(device)
-        //config.enableStream(Native.Stream.RS2_STREAM_COLOR, 0, width, height, Native.Format.RS2_FORMAT_RGB8, 30)
-        config.enableStream(Native.Stream.RS2_STREAM_DEPTH, 0, width, height, Native.Format.RS2_FORMAT_Z16, 30)
+        config.enableStream(Native.Stream.RS2_STREAM_DEPTH, streamIndex, width, height, Native.Format.RS2_FORMAT_Z16, fps)
 
         Thread.sleep(1000) // CONCURRENCY BUG SOMEWHERE!
 
@@ -51,13 +54,20 @@ class RealSenseCamera(val applet : PApplet) {
 
         for (i in 0 until frames.frameCount()) {
             val frame = frames.frame(i)
-            val buffer = frame.frameData
+            val buffer = frame.frameData.asCharBuffer()
+
+            if(0 == Native.rs2IsFrameExtendableTo(frame.ptr, Native.Extension.RS2_EXTENSION_DEPTH_FRAME.ordinal)) {
+                println("No extension depth frame!")
+                frame.release()
+                continue
+            }
 
             // update pixels
             image.loadPixels()
             (0 until width * height).forEach {
                 // add grayscale value
-                image.pixels[it] = buffer[it].toInt() //applet.color(buffer[it].toInt())
+                val depth = buffer[it]
+                image.pixels[it] = applet.color(Sketch.map(depth.toInt().absoluteValue, 0, 65536, 0, 255))
             }
             image.updatePixels()
 
