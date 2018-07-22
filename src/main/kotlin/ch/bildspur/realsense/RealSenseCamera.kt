@@ -58,8 +58,7 @@ class RealSenseCamera(val applet : PApplet) {
 
             if(frame.isExtendableTo(Native.Extension.RS2_EXTENSION_DEPTH_FRAME))
                 readDepthImage(frame)
-
-            if(frame.isExtendableTo(Native.Extension.RS2_EXTENSION_VIDEO_FRAME))
+            else
                 readColorImage(frame)
 
             frame.release()
@@ -89,8 +88,8 @@ class RealSenseCamera(val applet : PApplet) {
         val buffer = frame.frameData
 
         colorImage.loadPixels()
-        (0 until width * height).forEach { i ->
-            colorImage.pixels[i] = buffer[i].toInt()
+        (0 until width * height step 3).forEach { i ->
+            colorImage.pixels[i] = buffer[i].toInt() shl 16 or buffer[i + 1].toInt() shl 8 or buffer[i + 2].toInt()
         }
         colorImage.updatePixels()
     }
