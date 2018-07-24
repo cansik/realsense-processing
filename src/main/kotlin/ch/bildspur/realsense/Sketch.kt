@@ -22,7 +22,7 @@ class Sketch : PApplet() {
 
     val cam = RealSenseCamera(this)
 
-    var camMode = 0
+    var camMode = 1
 
     override fun setup() {
         cam.start()
