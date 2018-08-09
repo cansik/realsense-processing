@@ -1,22 +1,20 @@
 package ch.bildspur.realsense
 
-import ch.bildspur.realsense.utils.RangeFinder
 import org.librealsense.*
 import processing.core.PApplet
 import processing.core.PConstants
 import processing.core.PImage
-import kotlin.experimental.and
 
 class RealSenseCamera(val applet : PApplet) {
     private lateinit var context : Context
     private lateinit var pipeline : Pipeline
 
     // parameters
-    private val width = 1280
-    private val height = 720
+    private val width = 640
+    private val height = 480
     private val fps = 30
     private val depthStreamIndex = 0
-    private val infraredStreamIndex = 0
+    private val infraredStreamIndex = 1
     private val colorStreamIndex = 0
 
     val depthImage = PImage(width, height, PConstants.RGB)
@@ -41,7 +39,7 @@ class RealSenseCamera(val applet : PApplet) {
         config.enableDevice(device)
         config.enableStream(Native.Stream.RS2_STREAM_DEPTH, depthStreamIndex, width, height, Native.Format.RS2_FORMAT_Z16, fps)
         config.enableStream(Native.Stream.RS2_STREAM_COLOR, colorStreamIndex, width, height, Native.Format.RS2_FORMAT_RGB8, fps)
-        //config.enableStream(Native.Stream.RS2_STREAM_INFRARED, infraredStreamIndex, width, height, Native.Format.RS2_FORMAT_RGB8, fps)
+        config.enableStream(Native.Stream.RS2_STREAM_INFRARED, infraredStreamIndex, width, height, Native.Format.RS2_FORMAT_Y8, fps)
 
         Thread.sleep(1000) // CONCURRENCY BUG SOMEWHERE!
 
