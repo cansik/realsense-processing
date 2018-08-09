@@ -10,8 +10,8 @@ class RealSenseCamera(val applet : PApplet) {
     private lateinit var pipeline : Pipeline
 
     // parameters
-    private val width = 1280
-    private val height = 720
+    private val width = 640
+    private val height = 480
     private val fps = 30
     private val depthStreamIndex = 0
     private val infraredStreamIndex = 0
@@ -88,10 +88,9 @@ class RealSenseCamera(val applet : PApplet) {
     private fun readColorImage(frame : Frame)
     {
         val buffer = frame.frameData
-
         colorImage.loadPixels()
-        (0 until width * height step 3).forEach { i ->
-            colorImage.pixels[i] = buffer[i].toInt() shl 16 or buffer[i + 1].toInt() shl 8 or buffer[i + 2].toInt()
+        (0 until frame.strideInBytes * height step 3).forEach { i ->
+            colorImage.pixels[i / 3] = applet.color(buffer[i].toInt(), buffer[i + 1].toInt(), buffer[i + 2].toInt())
         }
         colorImage.updatePixels()
     }
@@ -99,6 +98,10 @@ class RealSenseCamera(val applet : PApplet) {
     fun stop()
     {
     }
+}
+
+private fun Int.clampByte(): Int {
+    return Math.max(Math.min(255, this), 0)
 }
 
 private fun Int.clamp(min: Int, max: Int): Int {
