@@ -1,17 +1,19 @@
 package ch.bildspur.realsense
 
+import ch.bildspur.realsense.utils.RangeFinder
 import org.librealsense.*
 import processing.core.PApplet
 import processing.core.PConstants
 import processing.core.PImage
+import kotlin.experimental.and
 
 class RealSenseCamera(val applet : PApplet) {
     private lateinit var context : Context
     private lateinit var pipeline : Pipeline
 
     // parameters
-    private val width = 640
-    private val height = 480
+    private val width = 1280
+    private val height = 720
     private val fps = 30
     private val depthStreamIndex = 0
     private val infraredStreamIndex = 0
@@ -72,13 +74,13 @@ class RealSenseCamera(val applet : PApplet) {
 
         depthImage.loadPixels()
         (0 until width * height).forEach { i ->
-            val depth = buffer[i].toInt()
+            val depth = buffer[i].toInt() and 0xFFFF
 
             val depthLevel = 50
-            val grayScale = Sketch.map(depth, 0, 65536 / depthLevel, 255, 0)
+            val grayScale = Sketch.map(depth, 0, 65536 / depthLevel, 255, 0).clamp(0, 255)
 
             if(depth > 0)
-                depthImage.pixels[i] = applet.color(grayScale.clamp(0, 255))
+                depthImage.pixels[i] = applet.color(grayScale)
             else
                 depthImage.pixels[i] = applet.color(0)
         }
@@ -90,7 +92,10 @@ class RealSenseCamera(val applet : PApplet) {
         val buffer = frame.frameData
         colorImage.loadPixels()
         (0 until frame.strideInBytes * height step 3).forEach { i ->
-            colorImage.pixels[i / 3] = applet.color(buffer[i].toInt(), buffer[i + 1].toInt(), buffer[i + 2].toInt())
+            colorImage.pixels[i / 3] =
+                    applet.color(buffer[i].toInt() and 0xFF,
+                            buffer[i + 1].toInt() and 0xFF,
+                            buffer[i + 2].toInt() and 0xFF)
         }
         colorImage.updatePixels()
     }
@@ -98,12 +103,8 @@ class RealSenseCamera(val applet : PApplet) {
     fun stop()
     {
     }
-}
 
-private fun Int.clampByte(): Int {
-    return Math.max(Math.min(255, this), 0)
-}
-
-private fun Int.clamp(min: Int, max: Int): Int {
-    return Math.max(Math.min(max, this), min)
+    private fun Int.clamp(min: Int, max: Int): Int {
+        return Math.max(Math.min(max, this), min)
+    }
 }
