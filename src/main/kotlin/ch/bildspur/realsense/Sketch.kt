@@ -22,6 +22,10 @@ class Sketch : PApplet() {
 
     val cam = RealSenseCamera(this)
 
+    val rec = PImageRecorder(this)
+
+    var recording = false
+
     var camMode = 1
 
     override fun setup() {
@@ -39,6 +43,11 @@ class Sketch : PApplet() {
             1 -> cam.colorImage
             else -> cam.depthImage
         }, 0f, 0f)
+
+        if(recording)
+        {
+            rec.capture(cam.depthImage.copy())
+        }
     }
 
     override fun stop()
@@ -53,6 +62,18 @@ class Sketch : PApplet() {
     override fun keyPressed() {
         super.keyPressed()
 
-        camMode = (camMode + 1) % 2
+        when(key)
+        {
+            ' ' ->  camMode = (camMode + 1) % 2
+            'r' -> {
+                println("recording...")
+                recording = true
+            }
+            's' -> {
+                println("stopped recording!")
+                recording = false
+                rec.save("test")
+            }
+        }
     }
 }
