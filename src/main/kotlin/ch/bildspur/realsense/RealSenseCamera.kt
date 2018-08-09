@@ -73,7 +73,9 @@ class RealSenseCamera(val applet : PApplet) {
         depthImage.loadPixels()
         (0 until width * height).forEach { i ->
             val depth = buffer[i].toInt()
-            val grayScale = Sketch.map(depth, 0, 65536 / 50, 255, 0)
+
+            val depthLevel = 50
+            val grayScale = Sketch.map(depth, 0, 65536 / depthLevel, 255, 0)
 
             if(depth > 0)
                 depthImage.pixels[i] = applet.color(grayScale.clamp(0, 255))
