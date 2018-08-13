@@ -78,9 +78,9 @@ class RealSenseCamera(val applet : PApplet) {
             val grayScale = Sketch.map(depth, 0, 65536 / depthLevel, 255, 0).clamp(0, 255)
 
             if(depth > 0)
-                depthImage.pixels[i] = applet.color(grayScale)
+                depthImage.pixels[i] = color(grayScale)
             else
-                depthImage.pixels[i] = applet.color(0)
+                depthImage.pixels[i] = color(0)
         }
         depthImage.updatePixels()
     }
@@ -90,8 +90,7 @@ class RealSenseCamera(val applet : PApplet) {
         val buffer = frame.frameData
         colorImage.loadPixels()
         (0 until frame.strideInBytes * height step 3).forEach { i ->
-            colorImage.pixels[i / 3] =
-                    applet.color(buffer[i].toInt() and 0xFF,
+            colorImage.pixels[i / 3] = color(buffer[i].toInt() and 0xFF,
                             buffer[i + 1].toInt() and 0xFF,
                             buffer[i + 2].toInt() and 0xFF)
         }
@@ -104,5 +103,13 @@ class RealSenseCamera(val applet : PApplet) {
 
     private fun Int.clamp(min: Int, max: Int): Int {
         return Math.max(Math.min(max, this), min)
+    }
+
+    private fun color(gray: Int): Int {
+        return -0x1000000 or (gray shl 16) or (gray shl 8) or gray
+    }
+
+    private fun color(v1: Int, v2: Int, v3: Int): Int {
+            return -0x1000000 or (v1 shl 16) or (v2 shl 8) or v3
     }
 }
