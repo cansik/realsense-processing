@@ -28,6 +28,11 @@ class RealSenseCamera(val applet : PApplet) {
         val deviceList = context.queryDevices()
         val devices = deviceList.devices
 
+        if(devices.isEmpty()) {
+            println("no devices found!")
+            return
+        }
+
         val device = devices[0]
 
         println("device found: ${device.name()}")
