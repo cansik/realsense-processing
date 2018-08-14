@@ -46,8 +46,6 @@ class RealSenseCamera(val applet : PApplet) {
         config.enableStream(Native.Stream.RS2_STREAM_COLOR, colorStreamIndex, width, height, Native.Format.RS2_FORMAT_RGB8, fps)
         config.enableStream(Native.Stream.RS2_STREAM_INFRARED, infraredStreamIndex, width, height, Native.Format.RS2_FORMAT_Y8, fps)
 
-        Thread.sleep(1000) // CONCURRENCY BUG SOMEWHERE!
-
         println("starting device...")
         pipeline.startWithConfig(config)
 
