@@ -21,10 +21,10 @@ void draw()
   camera.readStreams();
 
   // show depth stream
-  //image(camera.getDepthImage(), 0, 0);
+  image(camera.getDepthImage(), 0, 0);
 
   // show color stream
-  image(camera.getColorImage(), 0, 0);
+  //image(camera.getColorImage(), 0, 0);
 
   // show fps
   surface.setTitle("FPS: " + frameRate);
