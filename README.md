@@ -9,7 +9,7 @@ Processing IDE Example:
 
 * [/examples/RealsenseViewer](https://github.com/cansik/realsense-processing/tree/master/examples/RealsenseViewer)
 
-You find the java interface repository here:
+You find the java interface repository here (build it with [gradle 4.9 or lower](https://github.com/cansik/realsense-processing/issues/2#issuecomment-450195961)):
 
 * [https://github.com/cansik/librealsense](https://github.com/cansik/librealsense)
 
