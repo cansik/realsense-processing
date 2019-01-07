@@ -5,7 +5,11 @@ A proof of concept to use Intel RealSense D400 cameras together with processing.
 
 This project is just a proof of concept on how to use the RealSense D400 cam series together with processing. I am currently working on a Java interface to access the RealSense cameras.
 
-You find the java interface repository here:
+Processing IDE Example:
+
+* [/examples/RealsenseViewer](https://github.com/cansik/realsense-processing/tree/master/examples/RealsenseViewer)
+
+You find the java interface repository here (build it with [gradle 4.9 or lower](https://github.com/cansik/realsense-processing/issues/2#issuecomment-450195961)):
 
 * [https://github.com/cansik/librealsense](https://github.com/cansik/librealsense)
 
