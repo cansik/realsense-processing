@@ -1,20 +1,16 @@
-# RealSense D400 for Processing
-A proof of concept to use Intel RealSense D400 cameras together with processing.
+# Intel RealSense for Processing [![Build Status](https://travis-ci.org/cansik/realsense-processing.svg?branch=master)](https://travis-ci.org/cansik/realsense-processing) [![Build status](https://ci.appveyor.com/api/projects/status/nqmgr5d1pfcmco7u?svg=true)](https://ci.appveyor.com/project/cansik/realsense-processing) 
+Intel RealSense support for [Processing](https://processing.org/)
 
-![Depth Cam Example](readme/depthimage2.png)
+## Introduction
 
-This project is just a proof of concept on how to use the RealSense D400 cam series together with processing. I am currently working on a Java interface to access the RealSense cameras.
+**Intel RealSense for Procesing** is a port of the **[Intel RealSense](https://github.com/IntelRealSense/librealsense)** library for processing. With this library it is possible to use the Intel RealSense D400 camera series within processing.
 
-Processing IDE Example:
+Supported Intel RealSense Version: [2.17.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.17.0)
 
-* [/examples/RealsenseViewer](https://github.com/cansik/realsense-processing/tree/master/examples/RealsenseViewer)
+Currently it is still under development and **ONLY** tested on MacOS.
 
-You find the java interface repository here (build it with [gradle 4.9 or lower](https://github.com/cansik/realsense-processing/issues/2#issuecomment-450195961)):
+The proof of concept of this library can be found here: proof-of-concept
 
-* [https://github.com/cansik/librealsense](https://github.com/cansik/librealsense)
+## About
 
-which is based on
-
-* [https://github.com/edwinRNDR/librealsense](https://github.com/edwinRNDR/librealsense)
-
-Feel free to contact me if you need to know more or want to contribute.
+The processing library is maintained by [@cansik](https://github.com/cansik) and based on the native Intel RealSense [wrapper](https://github.com/cansik/librealsense) develped by [@edwinRNDR](https://github.com/edwinRNDR) and [@cansik](https://github.com/cansik)
