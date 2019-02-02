@@ -49,6 +49,7 @@ cp -r "build/docs/javadoc" "$OUTPUT/reference"
 
 cp -r "examples" "$OUTPUT/"
 cp library.properties "$OUTPUT/"
+cp -r readme "$OUTPUT/"
 cp README.md "$OUTPUT/"
 cp -r "src" "$OUTPUT/"
 
