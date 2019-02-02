@@ -57,4 +57,4 @@ void draw()
 
 ## About
 
-The processing library is maintained by [@cansik](https://github.com/cansik) and based on the native Intel RealSense [wrapper](https://github.com/cansik/librealsense) develped by [@edwinRNDR](https://github.com/edwinRNDR) and [@cansik](https://github.com/cansik)
+The processing library is maintained by [@cansik](https://github.com/cansik) and based on the native Intel RealSense [wrapper](https://github.com/cansik/librealsense) developed by [@edwinRNDR](https://github.com/edwinRNDR) and [@cansik](https://github.com/cansik)
