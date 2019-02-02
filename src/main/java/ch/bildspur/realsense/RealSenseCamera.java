@@ -1,139 +1,107 @@
 package ch.bildspur.realsense;
 
+import org.librealsense.Context;
+import org.librealsense.Device;
+import org.librealsense.DeviceList;
+import org.librealsense.Native;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
+import java.util.List;
+
 /**
- * Sweep Sensor
+ * Intel RealSense Camera
  */
 public class RealSenseCamera implements PConstants {
-    private static final int DEFAULT_SPEED = 5;
-    private static final int DEFAULT_SAMPLE_RATE = 500;
-
-    private static final int THREAD_JOIN_WAIT_TIME = 5000;
-
+    // processing
     private PApplet parent;
-    private Thread sweepThread;
 
-    volatile private boolean isRunning = false;
-    volatile private boolean isStarting = false;
+    // realsense
+    private Context context;
 
+    // camera
+    volatile private boolean running = false;
 
     /**
-     * Create a new Sweep sensor.
+     * Create a new Intel RealSense camera.
      * @param parent Parent processing sketch.
      */
     public RealSenseCamera(PApplet parent)
     {
         this.parent = parent;
         parent.registerMethod("stop", this);
+
+        // load native libs
+        loadNativeLibraries();
+
+        // create context
+        context = Context.create();
     }
 
     /**
-     * Start the sensor and listen on a specific port.
-     * @param port COM Port to listen on.
+     * Start the camera.
      */
-    public void start(String port) {
-      this.start(port, DEFAULT_SPEED, DEFAULT_SAMPLE_RATE);
-    }
-
-    /**
-     * Start the sensor and listen on a specific port, rotation speed and sample rate.
-     * @param port COM Port to listen on.
-     * @param speed rotation speed of the realsense sensor.
-     * @param sampleRate sample rate of the realsense sensor.
-     */
-    public void start(String port, int speed, int sampleRate) {this.start(port, speed, sampleRate, false);}
-
-    /**
-     * Start the sensor and listen on a specific port.
-     * @param port COM Port to listen on.
-     */
-    public void startAsync(String port) {
-        this.startAsync(port, DEFAULT_SPEED, DEFAULT_SAMPLE_RATE);
-    }
-
-    /**
-     * Start the sensor asynchronously and listen on a specific port, rotation speed and sample rate.
-     * @param port COM Port to listen on.
-     * @param speed rotation speed of the realsense sensor.
-     * @param sampleRate sample rate of the realsense sensor.
-     */
-    public void startAsync(String port, int speed, int sampleRate) {this.start(port, speed, sampleRate, true);}
-
-    /**
-     * Start the sensor and listen on a specific port, rotation speed and sample rate.
-     * @param port COM Port to listen on.
-     * @param speed rotation speed of the realsense sensor.
-     * @param sampleRate sample rate of the realsense sensor.
-     * @param async indicates if method runs asynchronously.
-     */
-     private void start(String port, int speed, int sampleRate, boolean async)
+     public void start()
      {
-         if(isRunning)
+         if(running)
              return;
 
-         if(!async)
-             //setupSweep();
-
-         // create update thread
-         sweepThread = new Thread(() -> {
-             if(async)
-                 //setupSweep();
-
-             isRunning = true;
-             PApplet.println("RealSense: running!");
-
-             while(isRunning) {
-                 //updateScans();
-             }
-         });
-
-         // start update thread
-         isStarting = true;
-         sweepThread.start();
+         running = true;
+         setupCamera();
      }
 
+    public void readFrames()
+    {
+
+    }
+
+    public List<Device> getDevices() {
+        DeviceList deviceList = this.context.queryDevices();
+        return deviceList.getDevices();
+    }
+
+    public boolean isCameraAvailable() {
+        return !getDevices().isEmpty();
+    }
+
     /**
-     * Stop the sensor.
+     * Stop the camera.
      */
     public void stop()
     {
-        if(!isRunning && !isStarting)
+        if(!running)
             return;
 
-        if(isRunning) {
-            //device.stopScanning();
-            //device.close();
-        }
-
         // set states
-        isRunning = false;
-        isStarting = false;
+        running = false;
+    }
 
-        // join thread
-        try {
-            sweepThread.join(THREAD_JOIN_WAIT_TIME);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    private void setupCamera()
+    {
+
+    }
+
+    private void loadNativeLibraries()
+    {
+        String os = System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("win")) {
+            Native.loadNativeLibraries("native/windows-x64");
+        } else if (os.contains("mac")) {
+            Native.loadNativeLibraries("native/osx-x64");
+        } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+            Native.loadNativeLibraries("native/linux-64");
+        } else {
+            // Operating System not supported!
+            PApplet.println("RealSense: Load the native libraries by your own.");
         }
-
-        PApplet.println("RealSense: stopped!");
     }
 
     /**
-     * Check if the sensor is running.
-     * @return True if the sensor is running.
+     * Check if the camera is running.
+     * @return True if the camera is running.
      */
     public boolean isRunning() {
-        return isRunning;
-    }
-
-    /**
-     * Check if the sensor is starting up.
-     * @return True if the sensor is starting up.
-     */
-    public boolean isStarting() {
-        return isStarting;
+        return running;
     }
 }
