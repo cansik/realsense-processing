@@ -18,6 +18,23 @@ Supported Intel RealSense Version: [2.17.0](https://github.com/IntelRealSense/li
 - The library is not multithreaded, so there will be performance issues.
 - The proof of concept of this library can be found here: [proof-of-concept](https://github.com/cansik/realsense-processing/tree/master/proof-of-concept).
 
+
+#### Support Configurations
+Here are some configurations I have tested and which are working with the Intel RealSense D435. Please make sure you are using a USB 3 cable!
+
+| width | height | fps                         | depth stream | color stream |
+|-------|--------|-----------------------------|--------------|--------------|
+| 424   | 240    | `6`, `15`, `30`, `60`       | ✅            | ✅            |
+| 480   | 270    | `6`, `15`, `30`, `60`, `90` | ✅            | ❌            |
+| 640   | 480    | `6`, `15`, `30`, `60`       | ✅            | ✅            |
+| 640   | 480    | `90`                        | ✅            | ❌            |
+| 848   | 480    | `6`, `15`, `30`, `60`       | ✅            | ✅            |
+| 848   | 480    | `90`                        | ✅            | ❌            |
+| 960   | 540    | `6`, `15`, `30`, `60`       | ❌            | ✅            |
+| 1280  | 720    | `30`                        | ✅            | ✅            |
+| 1280  | 800    | `6`, `15`, `30`, `60`, `90` | ❌            | ❌            |
+| 1920  | 1080   | `6`, `15`, `30`             | ❌            | ✅            |
+
 ## Example
 
 Here is an example which shows how to use the library. You find more [examples here](https://github.com/cansik/realsense-processing/tree/master/examples).
