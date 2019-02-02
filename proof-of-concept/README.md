@@ -3,6 +3,8 @@ A proof of concept to use Intel RealSense D400 cameras together with processing.
 
 ![Depth Cam Example](readme/depthimage2.png)
 
+#### ![#f03c15](https://placehold.it/12/f03c15/000000?text=+) Important: There is a new project which succeeds this one: [github.com/cansik/realsense-processing](https://github.com/cansik/realsense-processing)
+
 This project is just a proof of concept on how to use the RealSense D400 cam series together with processing. I am currently working on a Java interface to access the RealSense cameras.
 
 Processing IDE Example:
