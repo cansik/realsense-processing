@@ -170,26 +170,7 @@ public class RealSenseCamera implements PConstants {
         running = false;
     }
 
-    public void createDepthImage(int minColor, int maxColor)
-    {
-        this.depthImage.loadPixels();
-
-        for (int i = 0; i < width * height; i++)
-        {
-            int depth = depthBuffer[i] & 0xFFFF;
-            float normalizedDepth = (float)depth / MAX_DEPTH;
-            int color = parent.lerpColor(minColor, maxColor, normalizedDepth);
-
-            if (depthBuffer[i] > 0)
-                depthImage.pixels[i] = minColor;
-            else
-                depthImage.pixels[i] = color;
-        }
-
-        this.depthImage.updatePixels();
-    }
-
-    public void createGrayDepthImage(int minDepth, int maxDepth)
+    public void createDepthImage(int minDepth, int maxDepth)
     {
         this.depthImage.loadPixels();
 
