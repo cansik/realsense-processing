@@ -217,8 +217,7 @@ public class RealSenseCamera implements PConstants {
     private void loadNativeLibraries()
     {
         String os = System.getProperty("os.name").toLowerCase();
-        ProcessingUtils utils = new ProcessingUtils();
-        String libPath = utils.getLibPath(this.parent);
+        String libPath = ProcessingUtils.getLibPath(this.parent);
 
         if (os.contains("win")) {
             Native.loadNativeLibraries(Paths.get(libPath,"native/windows-x64").toString());

@@ -7,8 +7,9 @@ import java.net.URL;
 import java.nio.file.Paths;
 
 class ProcessingUtils {
-    protected String getLibPath(PApplet sketch) {
-        URL url = this.getClass().getResource(ProcessingUtils.class.getSimpleName() + ".class");
+    static String getLibPath(PApplet sketch) {
+        ProcessingUtils utils = new ProcessingUtils();
+        URL url = utils.getClass().getResource(ProcessingUtils.class.getSimpleName() + ".class");
         if (url != null) {
             // Convert URL to string, taking care of spaces represented by the "%20"
             // string.
