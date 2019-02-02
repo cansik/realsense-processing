@@ -18,7 +18,7 @@ Supported Intel RealSense Version: [2.17.0](https://github.com/IntelRealSense/li
 - The library is not multithreaded, so there will be performance issues.
 - The proof of concept of this library can be found here: [proof-of-concept](https://github.com/cansik/realsense-processing/tree/master/proof-of-concept).
 
-## Example
+## Example
 
 Here is an example which shows how to use the library. You find more [examples here](https://github.com/cansik/realsense-processing/tree/master/examples).
 
