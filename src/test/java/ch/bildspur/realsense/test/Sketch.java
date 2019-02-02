@@ -38,14 +38,25 @@ public class Sketch extends PApplet {
 
         camera.readFrames();
 
+        // create depth image
+        camera.createDepthImage(300, 2500);
+
         // show both streams
-        image(camera.getColorImage(), 0, 0);
-        image(camera.getDepthImage(), 640, 0);
+        image(camera.getDepthImage(), 0, 0);
+        image(camera.getColorImage(), 640, 0);
+
+        // show depth info
+        if(mouseX < 640 && mouseY < 480)
+        {
+            // show depth info
+            fill(0, 255, 0);
+            text("Depth: " + camera.getDepth(mouseX, mouseY), mouseX, mouseY + 10);
+        }
 
         fill(255, 255, 255);
         textAlign(LEFT, CENTER);
-        text("Color Stream", 20, 480  + 8);
-        text("Depth Stream", 640 + 20, 480  + 8);
+        text("Depth Stream", 20, 480  + 8);
+        text("Color Stream", 640 + 20, 480  + 8);
         surface.setTitle("RealSense Processing - FPS: " + Math.round(frameRate));
     }
 }

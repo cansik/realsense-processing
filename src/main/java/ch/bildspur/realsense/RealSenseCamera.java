@@ -13,6 +13,9 @@ import java.util.List;
  * Intel RealSense Camera
  */
 public class RealSenseCamera implements PConstants {
+    private static char MIN_DEPTH = 0;
+    private static char MAX_DEPTH = 65535;
+
     // processing
     private PApplet parent;
 
@@ -34,6 +37,7 @@ public class RealSenseCamera implements PConstants {
 
     private PImage depthImage;
     private PImage colorImage;
+    private char[] depthBuffer;
 
     /**
      * Create a new Intel RealSense camera.
@@ -95,6 +99,9 @@ public class RealSenseCamera implements PConstants {
          this.depthImage = new PImage(this.width, this.height, PConstants.RGB);
          this.colorImage = new PImage(this.width, this.height, PConstants.RGB);
 
+         // create buffer
+         this.depthBuffer = new char[this.width * this.height];
+
          // create pipeline
          pipeline = context.createPipeline();
 
@@ -131,7 +138,7 @@ public class RealSenseCamera implements PConstants {
         for (int i = 0; i < frames.frameCount(); i++) {
             Frame frame = frames.frame(i);
             if (frame.isExtendableTo(Native.Extension.RS2_EXTENSION_DEPTH_FRAME)) {
-                this.readDepthImage(frame);
+                this.readDepthBuffer(frame);
             } else {
                 this.readColorImage(frame);
             }
@@ -163,22 +170,27 @@ public class RealSenseCamera implements PConstants {
         running = false;
     }
 
-    private void readDepthImage(Frame frame) {
-        CharBuffer buffer = frame.getFrameData().asCharBuffer();
+    public void createDepthImage(int minDepth, int maxDepth)
+    {
         this.depthImage.loadPixels();
 
         for (int i = 0; i < width * height; i++)
         {
-            int depth = buffer.get(i) & 0xFFFF;
-            int grayScale = (int) PApplet.map(depth, 0, 65536, 255, 0);
+            int grayScale = (int) PApplet.map(depthBuffer[i] & 0xFFFF, minDepth, maxDepth, 255, 0);
+            grayScale = PApplet.constrain(grayScale, MIN_DEPTH, MAX_DEPTH);
 
-            if (depth > 0)
+            if (depthBuffer[i] > 0)
                 depthImage.pixels[i] = parent.color(grayScale);
             else
                 depthImage.pixels[i] = parent.color(0);
         }
 
         this.depthImage.updatePixels();
+    }
+
+    private void readDepthBuffer(Frame frame) {
+        CharBuffer buffer = frame.getFrameData().asCharBuffer();
+        buffer.get(depthBuffer);
     }
 
     private void readColorImage(Frame frame) {
@@ -223,5 +235,10 @@ public class RealSenseCamera implements PConstants {
 
     public PImage getColorImage() {
         return colorImage;
+    }
+
+    public int getDepth(int x, int y)
+    {
+        return depthBuffer[x + y * width] & 0xFFFF;
     }
 }
