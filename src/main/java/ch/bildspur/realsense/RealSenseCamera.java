@@ -7,6 +7,7 @@ import processing.core.PImage;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -216,13 +217,15 @@ public class RealSenseCamera implements PConstants {
     private void loadNativeLibraries()
     {
         String os = System.getProperty("os.name").toLowerCase();
+        ProcessingUtils utils = new ProcessingUtils();
+        String libPath = utils.getLibPath(this.parent);
 
         if (os.contains("win")) {
-            Native.loadNativeLibraries("native/windows-x64");
+            Native.loadNativeLibraries(Paths.get(libPath,"native/windows-x64").toString());
         } else if (os.contains("mac")) {
-            Native.loadNativeLibraries("native/osx-x64");
+            Native.loadNativeLibraries(Paths.get(libPath,"native/osx-x64").toString());
         } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
-            Native.loadNativeLibraries("native/linux-64");
+            Native.loadNativeLibraries(Paths.get(libPath,"native/linux-64").toString());
         } else {
             // Operating System not supported!
             PApplet.println("RealSense: Load the native libraries by your own.");
