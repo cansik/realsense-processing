@@ -131,6 +131,9 @@ public class RealSenseCamera implements PConstants {
          running = true;
      }
 
+    /**
+     * Read the camera frame buffers for all active streams.
+     */
     public void readFrames()
     {
         FrameList frames = pipeline.waitForFrames(5000);
@@ -170,6 +173,11 @@ public class RealSenseCamera implements PConstants {
         running = false;
     }
 
+    /**
+     * Creates grayscale depth image from depth buffer (accessible through getDepthImage()).
+     * @param minDepth Minimum depth value which translates to white.
+     * @param maxDepth Maximum depth value which translates to black.
+     */
     public void createDepthImage(int minDepth, int maxDepth)
     {
         this.depthImage.loadPixels();
@@ -237,6 +245,12 @@ public class RealSenseCamera implements PConstants {
         return colorImage;
     }
 
+    /**
+     * Returns depth at specific position.
+     * @param x X coordinate.
+     * @param y Y coordinate.
+     * @return Depth value between 0 and 65535.
+     */
     public int getDepth(int x, int y)
     {
         return depthBuffer[x + y * width] & 0xFFFF;
