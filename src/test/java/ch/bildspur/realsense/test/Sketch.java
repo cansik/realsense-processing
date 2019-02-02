@@ -2,7 +2,6 @@ package ch.bildspur.realsense.test;
 
 
 import ch.bildspur.realsense.RealSenseCamera;
-import org.librealsense.Device;
 import processing.core.PApplet;
 import processing.opengl.PJOGL;
 
@@ -25,12 +24,10 @@ public class Sketch extends PApplet {
     public void setup() {
         frameRate(FRAME_RATE);
 
-        /*
         if(camera.isCameraAvailable())
             println("Camera found!");
         else
             println("No camera available!");
-         */
 
         camera.start(640, 480, 30, true, true);
     }

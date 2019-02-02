@@ -61,7 +61,8 @@ public class RealSenseCamera implements PConstants {
      */
     public void start(int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream)
     {
-        List<Device> devices = getDevices();
+        DeviceList deviceList = this.context.queryDevices();
+        List<Device> devices = deviceList.getDevices();
 
         if(devices.isEmpty())
             PApplet.println("RealSense: No device found!");
@@ -142,21 +143,12 @@ public class RealSenseCamera implements PConstants {
     }
 
     /**
-     * Lists all available devices.
-     * Caution: Opening a device is maybe not possible because of the underlying API.
-     * @return List of Intel RealSense devices.
-     */
-    public List<Device> getDevices() {
-        DeviceList deviceList = this.context.queryDevices();
-        return deviceList.getDevices();
-    }
-
-    /**
      * Returns true if a device is available.
      * @return True if device is available.
      */
     public boolean isCameraAvailable() {
-        return !getDevices().isEmpty();
+        DeviceList deviceList = this.context.queryDevices();
+        return deviceList.getDeviceCount() > 0;
     }
 
     /**
