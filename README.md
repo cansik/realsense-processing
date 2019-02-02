@@ -9,9 +9,49 @@ Intel RealSense support for [Processing](https://processing.org/)
 
 Supported Intel RealSense Version: [2.17.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.17.0)
 
-Currently it is still under development and **ONLY** tested on MacOS.
+#### ![#f03c15](https://placehold.it/12/f03c15/000000?text=+) Important
 
-The proof of concept of this library can be found here: proof-of-concept
+- Currently it is still under development and **ONLY** tested on MacOS.
+- The library is not multithreaded, so there will be performance issues.
+- The proof of concept of this library can be found here: [proof-of-concept](https://github.com/cansik/realsense-processing/tree/master/proof-of-concept).
+
+## Example
+
+Here is an example which shows how to use the library. You find more [examples here](https://github.com/cansik/realsense-processing/tree/master/examples).
+
+```java
+import ch.bildspur.realsense.*;
+
+RealSenseCamera camera = new RealSenseCamera(this);
+
+void setup()
+{
+  size(640, 480);
+
+  // width, height, fps, depth-stream, color-stream
+  camera.start(640, 480, 30, true, true);
+}
+
+void draw()
+{
+  background(0);
+
+  // read frames
+  camera.readFrames();
+
+  // show color image
+  image(camera.getColorImage(), 0, 0);
+  
+  // -- or --
+  
+  // create grayscale image form depth buffer
+  // min and max depth
+  camera.createDepthImage(0, 3000);
+  
+  // show color image
+  image(camera.getDepthImage(), 0, 0);
+}
+```
 
 ## About
 
