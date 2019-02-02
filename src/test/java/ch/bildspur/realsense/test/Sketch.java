@@ -12,6 +12,9 @@ public class Sketch extends PApplet {
     public final static int OUTPUT_WIDTH = 1280;
     public final static int OUTPUT_HEIGHT = 500;
 
+    public final static int VIEW_WIDTH = 960;
+    public final static int VIEW_HEIGHT = 540;
+
     public final static int FRAME_RATE = 60;
 
     RealSenseCamera camera = new RealSenseCamera(this);
@@ -29,7 +32,7 @@ public class Sketch extends PApplet {
         else
             println("No camera available!");
 
-        camera.start(640, 480, 30, true, true);
+        camera.start(640, 480, 30, false, true);
     }
 
     public void draw() {
@@ -39,24 +42,26 @@ public class Sketch extends PApplet {
         camera.readFrames();
 
         // create depth image
-        camera.createDepthImage(0, 1500);
+        //camera.createDepthImage(0, 1500);
 
         // show both streams
-        image(camera.getDepthImage(), 0, 0);
-        image(camera.getColorImage(), 640, 0);
+        //image(camera.getDepthImage(), 0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+        image(camera.getColorImage(), VIEW_WIDTH, 0, VIEW_WIDTH, VIEW_HEIGHT);
 
         // show depth info
-        if(mouseX < 640 && mouseY < 480)
+        /*
+        if(mouseX < VIEW_WIDTH && mouseY < VIEW_HEIGHT)
         {
             // show depth info
             fill(0, 255, 0);
             text("Depth: " + camera.getDepth(mouseX, mouseY), mouseX, mouseY + 10);
         }
+        */
 
         fill(255, 255, 255);
         textAlign(LEFT, CENTER);
-        text("Depth Stream", 20, 480  + 8);
-        text("Color Stream", 640 + 20, 480  + 8);
+        text("Depth Stream", 20, VIEW_HEIGHT  + 8);
+        text("Color Stream", VIEW_WIDTH + 20, VIEW_HEIGHT  + 8);
         surface.setTitle("RealSense Processing - FPS: " + Math.round(frameRate));
     }
 }

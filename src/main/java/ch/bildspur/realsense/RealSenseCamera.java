@@ -108,6 +108,7 @@ public class RealSenseCamera implements PConstants {
 
          Config config = Config.create();
          config.enableDevice(device);
+
          if (this.enableDepthStream) {
              config.enableStream(Native.Stream.RS2_STREAM_DEPTH,
                      this.depthStreamIndex,
