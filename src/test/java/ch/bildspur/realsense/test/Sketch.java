@@ -39,7 +39,7 @@ public class Sketch extends PApplet {
         camera.readFrames();
 
         // create depth image
-        camera.createDepthImage(color(0, 0, 255), color(255, 255, 255));
+        camera.createDepthImage(0, 1500);
 
         // show both streams
         image(camera.getDepthImage(), 0, 0);
