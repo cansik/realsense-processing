@@ -11,14 +11,15 @@ Supported Intel RealSense Version: [2.17.0](https://github.com/IntelRealSense/li
 
 #### ![#f03c15](https://placehold.it/12/f03c15/000000?text=+) Important
 
-- Currently it is still under development and **ONLY** tested on `MacOS`.
+- Currently it is still under development.
 - Prebuilt libraries for `MacOS` are in the [nightly build](https://github.com/cansik/realsense-processing/releases/tag/latest).
-- `Ubuntu (Unix)` and `MacOS` binaries are bundled in the [pre release v2.17.0.1](https://github.com/cansik/realsense-processing/releases/tag/v2.17.0.1).
+- `Linux`, `MacOS` and `Windows` binaries are bundled in the [pre release v2.17.0.2](https://github.com/cansik/realsense-processing/releases/tag/v2.17.0.2).
+- `Linux` binaries are huge [#3211](https://github.com/IntelRealSense/librealsense/issues/3211).
 - The library is not multithreaded, so there will be performance issues.
 - The proof of concept of this library can be found here: [proof-of-concept](https://github.com/cansik/realsense-processing/tree/master/proof-of-concept).
 
 
-#### Support Configurations
+#### Supported Configurations
 Here are some configurations I have tested and which are working with the Intel RealSense D435. Please make sure you are using a USB 3 cable!
 
 | width | height | fps                         | depth stream | color stream |
