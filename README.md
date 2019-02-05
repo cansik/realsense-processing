@@ -12,7 +12,6 @@ Supported Intel RealSense Version: [2.17.0](https://github.com/IntelRealSense/li
 #### ![#f03c15](https://placehold.it/12/f03c15/000000?text=+) Important
 
 - Currently it is still under development.
-- Prebuilt libraries for `MacOS` are in the [nightly build](https://github.com/cansik/realsense-processing/releases/tag/latest).
 - `Linux`, `MacOS` and `Windows` binaries are bundled in the [pre release v2.17.0.2](https://github.com/cansik/realsense-processing/releases/tag/v2.17.0.2).
 - `Linux` binaries are huge [#3211](https://github.com/IntelRealSense/librealsense/issues/3211).
 - The library is not multithreaded, so there will be performance issues.
@@ -34,6 +33,10 @@ Here are some configurations I have tested and which are working with the Intel 
 | 1280  | 720    | `30`                        | ✅            | ✅            |
 | 1280  | 800    | `6`, `15`, `30`, `60`, `90` | ❌            | ❌            |
 | 1920  | 1080   | `6`, `15`, `30`             | ❌            | ✅            |
+
+## Installation
+
+Download the [latest build](https://github.com/cansik/realsense-processing/releases/tag/latest) and extract the files into your [processing library](https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library) folder.
 
 ## Example
 
