@@ -1,4 +1,4 @@
-# Intel RealSense for Processing [![Build Status](https://travis-ci.org/cansik/realsense-processing.svg?branch=master)](https://travis-ci.org/cansik/realsense-processing) [![Build status](https://ci.appveyor.com/api/projects/status/nqmgr5d1pfcmco7u?svg=true)](https://ci.appveyor.com/project/cansik/realsense-processing)
+# Intel RealSense for Processing [![Build Status](https://travis-ci.org/cansik/realsense-processing.svg?branch=master)](https://travis-ci.org/cansik/realsense-processing) [![Build status](https://ci.appveyor.com/api/projects/status/nqmgr5d1pfcmco7u?svg=true)](https://ci.appveyor.com/project/cansik/realsense-processing) [![codebeat badge](https://codebeat.co/badges/9169f571-c486-4b1e-a34c-595e67cd9d93)](https://codebeat.co/projects/github-com-cansik-realsense-processing-master)
 Intel RealSense support for [Processing](https://processing.org/)
 
 ![Example](readme/example.jpg)
