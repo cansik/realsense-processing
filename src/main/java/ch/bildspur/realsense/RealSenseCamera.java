@@ -142,9 +142,15 @@ public class RealSenseCamera implements PConstants {
 
         for (int i = 0; i < frames.frameCount(); i++) {
             Frame frame = frames.frame(i);
-            if (frame.isExtendableTo(Native.Extension.RS2_EXTENSION_DEPTH_FRAME)) {
+
+            StreamProfile profile = frame.getStreamProfile();
+            profile.getProfileData();
+
+            if (profile.getStream() == Native.Stream.RS2_STREAM_DEPTH) {
                 this.readDepthBuffer(frame);
-            } else {
+            }
+
+            if(profile.getStream() == Native.Stream.RS2_STREAM_COLOR) {
                 this.readColorImage(frame);
             }
 
@@ -168,8 +174,14 @@ public class RealSenseCamera implements PConstants {
      */
     public void stop()
     {
+        PApplet.println("cleanup realsense...");
+
         if(!running)
             return;
+
+        // clean up
+        pipeline.stop();
+        context.delete();
 
         // set states
         running = false;
