@@ -26,6 +26,7 @@ public class RealSenseCamera implements PConstants {
 
     private final int depthStreamIndex = 0;
     private final int colorStreamIndex = 0;
+    private final int irStreamIndex = 1;
 
     // camera
     volatile private boolean running = false;
@@ -35,9 +36,11 @@ public class RealSenseCamera implements PConstants {
     private int fps;
     private boolean enableDepthStream;
     private boolean enableColorStream;
+    private boolean enableIRStream;
 
     private PImage depthImage;
     private PImage colorImage;
+    private PImage irImage;
     private char[] depthBuffer;
 
     /**
@@ -64,7 +67,7 @@ public class RealSenseCamera implements PConstants {
      * @param enableDepthStream True if depth stream should be enabled.
      * @param enableColorStream True if color stream should be enabled.
      */
-    public void start(int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream)
+    public void start(int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream, boolean enableIRStream)
     {
         DeviceList deviceList = this.context.queryDevices();
         List<Device> devices = deviceList.getDevices();
@@ -72,7 +75,7 @@ public class RealSenseCamera implements PConstants {
         if(devices.isEmpty())
             PApplet.println("RealSense: No device found!");
 
-        this.start(devices.get(0), width, height, fps, enableDepthStream, enableColorStream);
+        this.start(devices.get(0), width, height, fps, enableDepthStream, enableColorStream, enableIRStream);
     }
 
     /**
@@ -84,7 +87,7 @@ public class RealSenseCamera implements PConstants {
      * @param enableDepthStream True if depth stream should be enabled.
      * @param enableColorStream True if color stream should be enabled.
      */
-     public void start(Device device, int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream)
+     public void start(Device device, int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream, boolean enableIRStream)
      {
          if(running)
              return;
@@ -95,10 +98,12 @@ public class RealSenseCamera implements PConstants {
          this.fps = fps;
          this.enableDepthStream = enableDepthStream;
          this.enableColorStream = enableColorStream;
+         this.enableIRStream = enableIRStream;
 
          // create images
          this.depthImage = new PImage(this.width, this.height, PConstants.RGB);
          this.colorImage = new PImage(this.width, this.height, PConstants.RGB);
+         this.irImage = new PImage(this.width, this.height, PConstants.RGB);
 
          // create buffer
          this.depthBuffer = new char[this.width * this.height];
@@ -127,6 +132,15 @@ public class RealSenseCamera implements PConstants {
                      this.fps);
          }
 
+         if (this.enableIRStream) {
+             config.enableStream(Native.Stream.RS2_STREAM_INFRARED,
+                     this.irStreamIndex,
+                     this.width,
+                     this.height,
+                     Native.Format.RS2_FORMAT_Y8,
+                     this.fps);
+         }
+
          // start pipeline
          pipeline.startWithConfig(config);
 
@@ -152,6 +166,10 @@ public class RealSenseCamera implements PConstants {
 
             if(profile.getStream() == Native.Stream.RS2_STREAM_COLOR) {
                 this.readColorImage(frame);
+            }
+
+            if(profile.getStream() == Native.Stream.RS2_STREAM_INFRARED) {
+                this.readIRImage(frame);
             }
 
             frame.release();
@@ -202,12 +220,26 @@ public class RealSenseCamera implements PConstants {
             grayScale = PApplet.constrain(grayScale, MIN_DEPTH, MAX_DEPTH);
 
             if (depthBuffer[i] > 0)
-                depthImage.pixels[i] = parent.color(grayScale);
+                depthImage.pixels[i] = toColor(grayScale);
             else
-                depthImage.pixels[i] = parent.color(0);
+                depthImage.pixels[i] = toColor(0);
         }
 
         this.depthImage.updatePixels();
+    }
+
+    private void readIRImage(Frame frame)
+    {
+        ByteBuffer buffer = frame.getFrameData();
+        irImage.loadPixels();
+
+        for(int i = 0; i < width * height; i++)
+        {
+            int irvalue = buffer.get(i) & 0xFF;
+            irImage.pixels[i] = toColor(irvalue);
+        }
+
+        irImage.updatePixels();
     }
 
     private void readDepthBuffer(Frame frame) {
@@ -221,10 +253,20 @@ public class RealSenseCamera implements PConstants {
 
         for (int i = 0; i < frame.getStrideInBytes() * height; i += 3)
         {
-            colorImage.pixels[i / 3] = parent.color(buffer.get(i) & 0xFF, buffer.get(i + 1) & 0xFF, buffer.get(i + 2) & 0xFF);
+            colorImage.pixels[i / 3] = toColor(buffer.get(i) & 0xFF, buffer.get(i + 1) & 0xFF, buffer.get(i + 2) & 0xFF);
         }
 
         this.colorImage.updatePixels();
+    }
+
+    private int toColor(int gray)
+    {
+        return toColor(gray, gray, gray);
+    }
+
+    private int toColor(int red, int green, int blue)
+    {
+        return -16777216 | red << 16 | green << 8 | blue;
     }
 
     private void loadNativeLibraries()
@@ -258,6 +300,10 @@ public class RealSenseCamera implements PConstants {
 
     public PImage getColorImage() {
         return colorImage;
+    }
+
+    public PImage getIRImage() {
+        return irImage;
     }
 
     /**
