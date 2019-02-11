@@ -25,6 +25,7 @@ public class RealSenseCamera implements PConstants {
     private Pipeline pipeline;
 
     private Colorizer colorizer;
+    private PointCloud pointCloud;
 
     private final int depthStreamIndex = 0;
     private final int colorStreamIndex = 0;
@@ -112,6 +113,7 @@ public class RealSenseCamera implements PConstants {
 
          // create pipeline
          colorizer = new Colorizer();
+         pointCloud = new PointCloud();
          pipeline = context.createPipeline();
 
          Config config = Config.create();
@@ -173,6 +175,11 @@ public class RealSenseCamera implements PConstants {
                     this.readColorImage(colorizedFrame);
                     colorizedFrame.release();
                 }
+
+                // check if pointcloud is available
+                Points points = pointCloud.process(frame);
+                PApplet.println(points.getCount());
+                points.release();
             }
 
             if(profile.getStream() == Native.Stream.RS2_STREAM_COLOR) {
