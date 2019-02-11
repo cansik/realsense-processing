@@ -32,7 +32,7 @@ public class Sketch extends PApplet {
         else
             println("No camera available!");
 
-        camera.start(640, 480, 30, true, true);
+        camera.start(640, 480, 30, false, true, true);
     }
 
     public void draw() {
@@ -42,10 +42,11 @@ public class Sketch extends PApplet {
         camera.readFrames();
 
         // create depth image
-        camera.createDepthImage(0, 1500);
+        //camera.createDepthImage(0, 1500);
 
         // show both streams
-        image(camera.getDepthImage(), 0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+        //image(camera.getDepthImage(), 0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+        image(camera.getIRImage(), 0, 0, VIEW_WIDTH, VIEW_HEIGHT);
         image(camera.getColorImage(), VIEW_WIDTH, 0, VIEW_WIDTH, VIEW_HEIGHT);
 
         // show depth info
