@@ -36,7 +36,7 @@ Here are some configurations I have tested and which are working with the Intel 
 
 ## Installation
 
-Download the [latest build](https://github.com/cansik/realsense-processing/releases/tag/latest) and extract the files into your [processing library](https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library) folder.
+Download the [latest build](https://github.com/cansik/realsense-processing/releases/tag/contributed) and extract the files into your [processing library](https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library) folder.
 
 ## Example
 
