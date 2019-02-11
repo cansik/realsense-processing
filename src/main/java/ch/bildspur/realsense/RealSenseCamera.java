@@ -24,6 +24,8 @@ public class RealSenseCamera implements PConstants {
     private Context context;
     private Pipeline pipeline;
 
+    private Colorizer colorizer;
+
     private final int depthStreamIndex = 0;
     private final int colorStreamIndex = 0;
     private final int irStreamIndex = 1;
@@ -109,6 +111,7 @@ public class RealSenseCamera implements PConstants {
          this.depthBuffer = new char[this.width * this.height];
 
          // create pipeline
+         colorizer = new Colorizer();
          pipeline = context.createPipeline();
 
          Config config = Config.create();
@@ -162,6 +165,14 @@ public class RealSenseCamera implements PConstants {
 
             if (profile.getStream() == Native.Stream.RS2_STREAM_DEPTH) {
                 this.readDepthBuffer(frame);
+
+                // check if colorized frame is available
+                Frame colorizedFrame = colorizer.process(frame);
+
+                if(colorizedFrame != null) {
+                    this.readColorImage(colorizedFrame);
+                    colorizedFrame.release();
+                }
             }
 
             if(profile.getStream() == Native.Stream.RS2_STREAM_COLOR) {
