@@ -68,7 +68,9 @@ public class ColorizerTest extends PApplet {
     @Override
     public void keyPressed() {
         super.keyPressed();
-        camera.stop();
-        System.exit(0);
+        camera.savePointCloud = true;
+
+        //camera.stop();
+        //System.exit(0);
     }
 }
