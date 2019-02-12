@@ -46,6 +46,8 @@ public class RealSenseCamera implements PConstants {
     private PImage irImage;
     private char[] depthBuffer;
 
+    public boolean savePointCloud = false;
+
     /**
      * Create a new Intel RealSense camera.
      * @param parent Parent processing sketch.
@@ -179,6 +181,14 @@ public class RealSenseCamera implements PConstants {
                 // check if pointcloud is available
                 Points points = pointCloud.process(frame);
                 PApplet.println(points.getCount());
+
+                if(savePointCloud)
+                {
+                    points.exportToPly("democloud.ply", frame);
+                    savePointCloud = false;
+                    PApplet.println("pointcloud saved!");
+                }
+
                 points.release();
             }
 
