@@ -21,12 +21,12 @@ javadoc {
 
 dependencies {
     // release
-    releaseJars files('lib/librealsense.jar')
+    releaseJars files('lib/librealsensejava-SNAPSHOT.jar')
 
     // compile
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
-    compile files('lib/librealsense.jar')
+    compile files('lib/librealsensejava-SNAPSHOT.jar')
 
     // processing
     compile group: 'org.processing', name: 'core', version: '3.3.7'

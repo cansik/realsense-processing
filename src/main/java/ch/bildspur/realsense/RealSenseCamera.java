@@ -1,42 +1,51 @@
 package ch.bildspur.realsense;
 
-import org.librealsense.*;
+import org.intel.rs.Context;
+import org.intel.rs.device.Device;
+import org.intel.rs.device.DeviceList;
+import org.intel.rs.frame.DepthFrame;
+import org.intel.rs.frame.Frame;
+import org.intel.rs.frame.FrameList;
+import org.intel.rs.frame.VideoFrame;
+import org.intel.rs.option.CameraOption;
+import org.intel.rs.pipeline.Config;
+import org.intel.rs.pipeline.Pipeline;
+import org.intel.rs.pipeline.PipelineProfile;
+import org.intel.rs.processing.Colorizer;
+import org.intel.rs.types.Format;
+import org.intel.rs.types.Option;
+import org.intel.rs.types.Stream;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
 
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.file.Paths;
-import java.util.List;
 
 /**
  * Intel RealSense Camera
  */
 public class RealSenseCamera implements PConstants {
-    private static char MIN_DEPTH = 0;
-    private static char MAX_DEPTH = 65535;
-
     // processing
     private PApplet parent;
 
     // realsense
     private Context context;
     private Pipeline pipeline;
+    private PipelineProfile pipelineProfile;
 
     private Colorizer colorizer;
-    private PointCloud pointCloud;
 
     private final int depthStreamIndex = 0;
     private final int colorStreamIndex = 0;
     private final int irStreamIndex = 1;
 
     // camera
-    volatile private boolean running = false;
+    private volatile boolean running = false;
 
     private int width;
     private int height;
     private int fps;
+
     private boolean enableDepthStream;
     private boolean enableColorStream;
     private boolean enableIRStream;
@@ -44,225 +53,191 @@ public class RealSenseCamera implements PConstants {
     private PImage depthImage;
     private PImage colorImage;
     private PImage irImage;
-    private char[] depthBuffer;
 
-    public boolean savePointCloud = false;
+    private FrameList frames;
 
     /**
      * Create a new Intel RealSense camera.
+     *
      * @param parent Parent processing sketch.
      */
-    public RealSenseCamera(PApplet parent)
-    {
+    public RealSenseCamera(PApplet parent) {
         this.parent = parent;
-        parent.registerMethod("stop", this);
 
-        // load native libs
-        loadNativeLibraries();
+        // register shutdown handler
+        Runtime.getRuntime().addShutdownHook(new Thread(this::release));
 
         // create context
-        context = Context.create();
+        context = new Context();
     }
 
     /**
      * Start the camera.
-     * @param width Width of the camera image.
-     * @param height Height of the camera image.
-     * @param fps Frames per second to capture.
+     *
+     * @param width             Width of the camera image.
+     * @param height            Height of the camera image.
+     * @param fps               Frames per second to capture.
      * @param enableDepthStream True if depth stream should be enabled.
      * @param enableColorStream True if color stream should be enabled.
+     * @param enableIRStream    True if first IR stream should be enabled.
      */
-    public void start(int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream, boolean enableIRStream)
-    {
+    public void start(int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream, boolean enableIRStream) {
         DeviceList deviceList = this.context.queryDevices();
-        List<Device> devices = deviceList.getDevices();
 
-        if(devices.isEmpty())
+        if (deviceList.count() == 0) {
             PApplet.println("RealSense: No device found!");
+            return;
+        }
 
-        this.start(devices.get(0), width, height, fps, enableDepthStream, enableColorStream, enableIRStream);
+        this.start(deviceList.get(0), width, height, fps, enableDepthStream, enableColorStream, enableIRStream);
     }
 
     /**
      * Start the camera.
-     * @param device Intel RealSense device to start.
-     * @param width Width of the camera image.
-     * @param height Height of the camera image.
-     * @param fps Frames per second to capture.
+     *
+     * @param device            Intel RealSense device to start.
+     * @param width             Width of the camera image.
+     * @param height            Height of the camera image.
+     * @param fps               Frames per second to capture.
      * @param enableDepthStream True if depth stream should be enabled.
      * @param enableColorStream True if color stream should be enabled.
+     * @param enableIRStream    True if first IR stream should be enabled.
      */
-     public void start(Device device, int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream, boolean enableIRStream)
-     {
-         if(running)
-             return;
+    public void start(Device device, int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream, boolean enableIRStream) {
+        if (running)
+            return;
 
-         // set configuration
-         this.width = width;
-         this.height = height;
-         this.fps = fps;
-         this.enableDepthStream = enableDepthStream;
-         this.enableColorStream = enableColorStream;
-         this.enableIRStream = enableIRStream;
+        pipeline = new Pipeline(context);
 
-         // create images
-         this.depthImage = new PImage(this.width, this.height, PConstants.RGB);
-         this.colorImage = new PImage(this.width, this.height, PConstants.RGB);
-         this.irImage = new PImage(this.width, this.height, PConstants.RGB);
+        // set configuration
+        this.width = width;
+        this.height = height;
+        this.fps = fps;
+        this.enableDepthStream = enableDepthStream;
+        this.enableColorStream = enableColorStream;
+        this.enableIRStream = enableIRStream;
 
-         // create buffer
-         this.depthBuffer = new char[this.width * this.height];
+        // create images
+        this.depthImage = new PImage(this.width, this.height, PConstants.RGB);
+        this.colorImage = new PImage(this.width, this.height, PConstants.RGB);
+        this.irImage = new PImage(this.width, this.height, PConstants.RGB);
 
-         // create pipeline
-         colorizer = new Colorizer();
-         pointCloud = new PointCloud();
-         pipeline = context.createPipeline();
+        // create pipeline
+        colorizer = new Colorizer();
 
-         Config config = Config.create();
-         config.enableDevice(device);
+        Config config = new Config();
+        config.enableDevice(device.getSerialNumber());
 
-         if (this.enableDepthStream) {
-             config.enableStream(Native.Stream.RS2_STREAM_DEPTH,
-                     this.depthStreamIndex,
-                     this.width,
-                     this.height,
-                     Native.Format.RS2_FORMAT_Z16,
-                     this.fps);
-         }
+        // set color scheme settings
+        CameraOption colorScheme = colorizer.getOptions().get(Option.ColorScheme);
+        colorScheme.setValue(2);
 
-         if (this.enableColorStream) {
-             config.enableStream(Native.Stream.RS2_STREAM_COLOR,
-                     this.colorStreamIndex,
-                     this.width,
-                     this.height,
-                     Native.Format.RS2_FORMAT_RGB8,
-                     this.fps);
-         }
+        if (this.enableDepthStream) {
+            config.enableStream(Stream.Depth,
+                    this.depthStreamIndex,
+                    this.width,
+                    this.height,
+                    Format.Z16,
+                    this.fps);
+        }
 
-         if (this.enableIRStream) {
-             config.enableStream(Native.Stream.RS2_STREAM_INFRARED,
-                     this.irStreamIndex,
-                     this.width,
-                     this.height,
-                     Native.Format.RS2_FORMAT_Y8,
-                     this.fps);
-         }
+        if (this.enableColorStream) {
+            config.enableStream(Stream.Color,
+                    this.colorStreamIndex,
+                    this.width,
+                    this.height,
+                    Format.Rgb8,
+                    this.fps);
+        }
 
-         // start pipeline
-         pipeline.startWithConfig(config);
+        if (this.enableIRStream) {
+            config.enableStream(Stream.Infrared,
+                    this.irStreamIndex,
+                    this.width,
+                    this.height,
+                    Format.Y8,
+                    this.fps);
+        }
 
-         running = true;
-     }
+        // start pipeline
+        pipelineProfile = pipeline.start(config);
+
+        running = true;
+    }
 
     /**
      * Read the camera frame buffers for all active streams.
      */
-    public void readFrames()
-    {
-        FrameList frames = pipeline.waitForFrames(5000);
+    public void readFrames() {
+        // release previous
+        if (frames != null)
+            frames.release();
 
-        for (int i = 0; i < frames.frameCount(); i++) {
-            Frame frame = frames.frame(i);
+        frames = pipeline.waitForFrames();
 
-            StreamProfile profile = frame.getStreamProfile();
-            profile.getProfileData();
+        if (this.enableDepthStream) {
+            DepthFrame frame = frames.getDepthFrame();
+            VideoFrame coloredFrame = colorizer.colorize(frame);
 
-            if (profile.getStream() == Native.Stream.RS2_STREAM_DEPTH) {
-                this.readDepthBuffer(frame);
+            coloredFrame.copyTo(depthImage.pixels);
+            depthImage.updatePixels();
 
-                // check if colorized frame is available
-                Frame colorizedFrame = colorizer.process(frame);
-
-                if(colorizedFrame != null) {
-                    this.readColorImage(colorizedFrame);
-                    colorizedFrame.release();
-                }
-
-                // check if pointcloud is available
-                Points points = pointCloud.process(frame);
-                PApplet.println(points.getCount());
-
-                if(savePointCloud)
-                {
-                    points.exportToPly("democloud.ply", frame);
-                    savePointCloud = false;
-                    PApplet.println("pointcloud saved!");
-                }
-
-                points.release();
-            }
-
-            if(profile.getStream() == Native.Stream.RS2_STREAM_COLOR) {
-                this.readColorImage(frame);
-            }
-
-            if(profile.getStream() == Native.Stream.RS2_STREAM_INFRARED) {
-                this.readIRImage(frame);
-            }
-
+            coloredFrame.release();
             frame.release();
         }
 
-        frames.release();
+        if (this.enableColorStream) {
+            VideoFrame frame = frames.getColorFrame();
+            frame.copyTo(this.colorImage.pixels);
+            this.colorImage.updatePixels();
+            frame.release();
+        }
+
+        if (this.enableIRStream) {
+            Frame frame = frames.getFirstOrDefault(Stream.Infrared);
+            readIRImage(frame);
+            frame.release();
+        }
     }
 
     /**
      * Returns true if a device is available.
+     *
      * @return True if device is available.
      */
     public boolean isCameraAvailable() {
         DeviceList deviceList = this.context.queryDevices();
-        return deviceList.getDeviceCount() > 0;
+        return deviceList.count() > 0;
     }
 
     /**
      * Stop the camera.
      */
-    public void stop()
-    {
-        PApplet.println("cleanup realsense...");
-
-        if(!running)
+    public void stop() {
+        if (!running)
             return;
+
+        if (frames != null)
+            frames.release();
 
         // clean up
         pipeline.stop();
-        context.delete();
+        pipeline.release();
 
         // set states
         running = false;
     }
 
-    /**
-     * Creates grayscale depth image from depth buffer (accessible through getDepthImage()).
-     * @param minDepth Minimum depth value which translates to white.
-     * @param maxDepth Maximum depth value which translates to black.
-     */
-    public void createDepthImage(int minDepth, int maxDepth)
-    {
-        this.depthImage.loadPixels();
+    public synchronized void release() {
+        stop();
 
-        for (int i = 0; i < width * height; i++)
-        {
-            int grayScale = (int) PApplet.map(depthBuffer[i] & 0xFFFF, minDepth, maxDepth, 255, 0);
-            grayScale = PApplet.constrain(grayScale, MIN_DEPTH, MAX_DEPTH);
-
-            if (depthBuffer[i] > 0)
-                depthImage.pixels[i] = toColor(grayScale);
-            else
-                depthImage.pixels[i] = toColor(0);
-        }
-
-        this.depthImage.updatePixels();
+        colorizer.release();
+        context.release();
     }
 
-    private void readIRImage(Frame frame)
-    {
-        ByteBuffer buffer = frame.getFrameData();
-        irImage.loadPixels();
-
-        for(int i = 0; i < width * height; i++)
-        {
+    private void readIRImage(Frame frame) {
+        ByteBuffer buffer = frame.getData();
+        for (int i = 0; i < width * height; i++) {
             int irvalue = buffer.get(i) & 0xFF;
             irImage.pixels[i] = toColor(irvalue);
         }
@@ -270,52 +245,17 @@ public class RealSenseCamera implements PConstants {
         irImage.updatePixels();
     }
 
-    private void readDepthBuffer(Frame frame) {
-        CharBuffer buffer = frame.getFrameData().asCharBuffer();
-        buffer.get(depthBuffer);
-    }
-
-    private void readColorImage(Frame frame) {
-        ByteBuffer buffer = frame.getFrameData();
-        this.colorImage.loadPixels();
-
-        for (int i = 0; i < frame.getStrideInBytes() * height; i += 3)
-        {
-            colorImage.pixels[i / 3] = toColor(buffer.get(i) & 0xFF, buffer.get(i + 1) & 0xFF, buffer.get(i + 2) & 0xFF);
-        }
-
-        this.colorImage.updatePixels();
-    }
-
-    private int toColor(int gray)
-    {
+    private int toColor(int gray) {
         return toColor(gray, gray, gray);
     }
 
-    private int toColor(int red, int green, int blue)
-    {
+    private int toColor(int red, int green, int blue) {
         return -16777216 | red << 16 | green << 8 | blue;
-    }
-
-    private void loadNativeLibraries()
-    {
-        String os = System.getProperty("os.name").toLowerCase();
-        String libPath = ProcessingUtils.getLibPath(this.parent);
-
-        if (os.contains("win")) {
-            Native.loadNativeLibraries(Paths.get(libPath,"native/windows-x64").toString());
-        } else if (os.contains("mac")) {
-            Native.loadNativeLibraries(Paths.get(libPath,"native/osx-x64").toString());
-        } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
-            Native.loadNativeLibraries(Paths.get(libPath,"native/linux-64").toString());
-        } else {
-            // Operating System not supported!
-            PApplet.println("RealSense: Load the native libraries by your own.");
-        }
     }
 
     /**
      * Check if the camera is already running.
+     *
      * @return True if the camera is already running.
      */
     public boolean isRunning() {
@@ -336,12 +276,22 @@ public class RealSenseCamera implements PConstants {
 
     /**
      * Returns depth at specific position.
+     * Returns -1 if no depth frame was captured.
+     * Returns -2 if no frames were captured at all.
+     *
      * @param x X coordinate.
      * @param y Y coordinate.
-     * @return Depth value between 0 and 65535.
+     * @return Distance value.
      */
-    public int getDepth(int x, int y)
-    {
-        return depthBuffer[x + y * width] & 0xFFFF;
+    public float getDistance(int x, int y) {
+        if (frames == null)
+            return -2;
+
+        DepthFrame depth = frames.getDepthFrame();
+
+        if (depth == null)
+            return -1;
+
+        return depth.getDistance(x, y);
     }
 }
