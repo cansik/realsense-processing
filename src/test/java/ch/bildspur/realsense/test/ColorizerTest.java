@@ -32,12 +32,15 @@ public class ColorizerTest extends PApplet {
     public void setup() {
         frameRate(FRAME_RATE);
 
-        if(camera.isCameraAvailable())
+        if(camera.isCameraAvailable()) {
             println("Camera found!");
-        else
+        }
+        else {
             println("No camera available!");
+            exit();
+        }
 
-        camera.start(640, 480, 30, true, false, false);
+        camera.start(640, 480, 30, true, true, false);
     }
 
     public void draw() {
@@ -45,9 +48,6 @@ public class ColorizerTest extends PApplet {
         background(55);
 
         camera.readFrames();
-
-        // create depth image
-        camera.createDepthImage(0, 1500);
 
         // show both streams
         image(camera.getDepthImage(), 0, 0, VIEW_WIDTH, VIEW_HEIGHT);
@@ -60,15 +60,9 @@ public class ColorizerTest extends PApplet {
         surface.setTitle("RealSense Processing - FPS: " + Math.round(frameRate));
     }
 
-    public void stop()
-    {
-        camera.stop();
-    }
-
     @Override
     public void keyPressed() {
         super.keyPressed();
-        camera.savePointCloud = true;
 
         //camera.stop();
         //System.exit(0);
