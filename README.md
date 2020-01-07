@@ -1,5 +1,5 @@
 # Intel RealSense for Processing [![Build Status](https://travis-ci.org/cansik/realsense-processing.svg?branch=master)](https://travis-ci.org/cansik/realsense-processing) [![Build status](https://ci.appveyor.com/api/projects/status/nqmgr5d1pfcmco7u?svg=true)](https://ci.appveyor.com/project/cansik/realsense-processing) [![codebeat badge](https://codebeat.co/badges/9169f571-c486-4b1e-a34c-595e67cd9d93)](https://codebeat.co/projects/github-com-cansik-realsense-processing-master)
-Intel RealSense support for [Processing](https://processing.org/)
+Intel RealSense 2 support for [Processing](https://processing.org/)
 
 ![Example](readme/example.jpg)
 
@@ -7,13 +7,12 @@ Intel RealSense support for [Processing](https://processing.org/)
 
 **Intel RealSense for Procesing** is a port of the **[Intel RealSense](https://github.com/IntelRealSense/librealsense)** library for processing. With this library it is possible to use the Intel RealSense D400 camera series within processing.
 
-Supported Intel RealSense Version: [2.17.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.17.0)
+Supported Intel RealSense Version: [2.29.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.29.0)
 
 #### ![#f03c15](https://placehold.it/12/f03c15/000000?text=+) Important
 
-- Currently it is still under development.
-- `Linux`, `MacOS` and `Windows` binaries are bundled in the [pre release v2.17.0.2](https://github.com/cansik/realsense-processing/releases/tag/v2.17.0.2).
-- `Linux` binaries are huge [#3211](https://github.com/IntelRealSense/librealsense/issues/3211).
+- Currently the library is still under development.
+- `Linux`, `MacOS` and `Windows` binaries are bundled in the jar.
 - The library is not multithreaded, so there will be performance issues.
 - The proof of concept of this library can be found here: [proof-of-concept](https://github.com/cansik/realsense-processing/tree/master/proof-of-concept).
 
@@ -78,4 +77,4 @@ void draw()
 
 ## About
 
-The processing library is maintained by [@cansik](https://github.com/cansik) and based on the native Intel RealSense [wrapper](https://github.com/cansik/librealsense) developed by [@edwinRNDR](https://github.com/edwinRNDR) and [@cansik](https://github.com/cansik)
+The processing library is maintained by [@cansik](https://github.com/cansik) and based on the native Intel RealSense [java wrapper](https://github.com/cansik/librealsense-java).
