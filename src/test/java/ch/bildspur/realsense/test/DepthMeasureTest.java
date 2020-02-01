@@ -72,12 +72,4 @@ public class DepthMeasureTest extends PApplet {
         text("Color Stream", VIEW_WIDTH + 20, VIEW_HEIGHT  + 8);
         surface.setTitle("RealSense Processing - FPS: " + Math.round(frameRate));
     }
-
-    @Override
-    public void keyPressed() {
-        super.keyPressed();
-
-        //camera.stop();
-        //System.exit(0);
-    }
 }
