@@ -15,7 +15,6 @@ import org.intel.rs.pipeline.Config;
 import org.intel.rs.pipeline.Pipeline;
 import org.intel.rs.pipeline.PipelineProfile;
 import org.intel.rs.processing.Colorizer;
-import org.intel.rs.processing.ProcessingBlock;
 import org.intel.rs.types.Format;
 import org.intel.rs.types.Stream;
 import processing.core.PApplet;
