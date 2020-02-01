@@ -6,6 +6,7 @@ import ch.bildspur.realsense.processing.RSFilterBlock;
 import ch.bildspur.realsense.processing.RSProcessingBlock;
 import ch.bildspur.realsense.type.ColorScheme;
 import org.intel.rs.processing.ThresholdFilter;
+import org.intel.rs.types.Option;
 import processing.core.PApplet;
 import processing.opengl.PJOGL;
 
@@ -52,6 +53,10 @@ public class CustomFilterTest extends PApplet {
         RSFilterBlock thresholdFilter = new RSFilterBlock();
         thresholdFilter.init(new ThresholdFilter());
         camera.addFilter(thresholdFilter);
+
+        // set threshold setting
+        thresholdFilter.getBlock().getOptions().get(Option.MinDistance).setValue(0.0f);
+        thresholdFilter.getBlock().getOptions().get(Option.MaxDistance).setValue(1.0f);
 
         camera.start();
     }
