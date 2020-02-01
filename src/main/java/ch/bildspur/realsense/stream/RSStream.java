@@ -3,7 +3,7 @@ package ch.bildspur.realsense.stream;
 import org.intel.rs.types.Format;
 import org.intel.rs.types.Stream;
 
-public class RealSenseStream {
+public class RSStream {
     private boolean enabled = false;
 
     private Stream streamType;
