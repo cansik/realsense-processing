@@ -55,8 +55,8 @@ public class CustomFilterTest extends PApplet {
         camera.addFilter(thresholdFilter);
 
         // set threshold setting
-        thresholdFilter.getBlock().getOptions().get(Option.MinDistance).setValue(0.0f);
-        thresholdFilter.getBlock().getOptions().get(Option.MaxDistance).setValue(1.0f);
+        thresholdFilter.setOption(Option.MinDistance, 0.0f);
+        thresholdFilter.setOption(Option.MaxDistance, 1.0f);
 
         camera.start();
     }

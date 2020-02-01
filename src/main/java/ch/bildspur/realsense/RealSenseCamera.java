@@ -55,11 +55,12 @@ public class RealSenseCamera implements PConstants {
     private VideoRSStream secondIRStream = new VideoRSStream();
 
     // processors
+    // todo: add syncer, pointcloud and
     private RSProcessingBlock<Colorizer> colorizer = new RSProcessingBlock<>();
     private RSProcessingBlock<Align> align = new RSProcessingBlock<>();
 
     // filter processors
-    private RSProcessingBlock<ThresholdFilter> thresholdFilter = new RSProcessingBlock<>();
+    private RSFilterBlock thresholdFilter = new RSFilterBlock();
 
     // processor lists
     private RSProcessingBlock[] blocks = {colorizer, align};
@@ -151,8 +152,7 @@ public class RealSenseCamera implements PConstants {
         colorizer.init(new Colorizer());
 
         // set color scheme settings
-        CameraOption colorScheme = colorizer.getBlock().getOptions().get(Option.ColorScheme);
-        colorScheme.setValue(scheme.getIndex());
+        colorizer.setOption(Option.ColorScheme, scheme.getIndex());
     }
 
     public void enableAlign() {
@@ -167,6 +167,15 @@ public class RealSenseCamera implements PConstants {
 
     public void addFilter(RSFilterBlock filter) {
         filters.add(filter);
+    }
+
+    public void addThresholdFilter(float minDistance, float maxDistance) {
+        thresholdFilter.init(new ThresholdFilter());
+        addFilter(thresholdFilter);
+
+        // set threshold settings
+        thresholdFilter.setOption(Option.MinDistance, minDistance);
+        thresholdFilter.setOption(Option.MaxDistance, maxDistance);
     }
 
     public void clearFilters() {
@@ -401,4 +410,5 @@ public class RealSenseCamera implements PConstants {
     // Methods to keep old API valid (will be removed soon!)
 
     // Other Getters
+
 }
