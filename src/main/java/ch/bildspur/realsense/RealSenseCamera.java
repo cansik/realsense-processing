@@ -28,6 +28,11 @@ import processing.core.PConstants;
 import processing.core.PImage;
 
 public class RealSenseCamera implements PConstants {
+    private final int defaultWidth = 640;
+    private final int defaultHeight = 480;
+    private final int defaultStreamIndex = 0;
+    private final int defaultFrameRate = 30;
+
     // processing
     private PApplet parent;
 
@@ -81,37 +86,37 @@ public class RealSenseCamera implements PConstants {
     }
 
     public void enableDepthStream() {
-        enableDepthStream(640, 480);
+        enableDepthStream(defaultWidth, defaultHeight);
     }
 
     public void enableDepthStream(int width, int height) {
-        enableDepthStream(width, height, 30);
+        enableDepthStream(width, height, defaultFrameRate);
     }
 
     public void enableDepthStream(int width, int height, int fps) {
-        depthStream.init(Stream.Depth, 0, width, height, Format.Z16, fps);
+        depthStream.init(Stream.Depth, defaultStreamIndex, width, height, Format.Z16, fps);
         enableStream(depthStream);
     }
 
     public void enableColorStream() {
-        enableColorStream(640, 480);
+        enableColorStream(defaultWidth, defaultHeight);
     }
 
     public void enableColorStream(int width, int height) {
-        enableColorStream(width, height, 30);
+        enableColorStream(width, height, defaultFrameRate);
     }
 
     public void enableColorStream(int width, int height, int fps) {
-        colorStream.init(Stream.Color, 0, width, height, Format.Rgb8, fps);
+        colorStream.init(Stream.Color, defaultStreamIndex, width, height, Format.Rgb8, fps);
         enableStream(colorStream);
     }
 
     public void enableIRStream() {
-        enableIRStream(640, 480);
+        enableIRStream(defaultWidth, defaultHeight);
     }
 
     public void enableIRStream(int width, int height) {
-        enableIRStream(width, height, 30);
+        enableIRStream(width, height, defaultFrameRate);
     }
 
     public void enableIRStream(int width, int height, int fps) {
