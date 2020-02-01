@@ -27,7 +27,7 @@ public class VideoRSStream extends RSStream {
     }
 
     public void copyPixels(VideoFrame frame) {
-        switch (getFormat()) {
+        switch (frame.getProfile().getFormat()) {
             case Rgb8:
                 copyRGB8(frame);
                 break;
