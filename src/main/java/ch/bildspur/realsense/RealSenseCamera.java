@@ -5,10 +5,7 @@ import ch.bildspur.realsense.processing.RSProcessingBlock;
 import ch.bildspur.realsense.stream.DepthRSStream;
 import ch.bildspur.realsense.stream.RSStream;
 import ch.bildspur.realsense.stream.VideoRSStream;
-import ch.bildspur.realsense.type.ColorScheme;
-import ch.bildspur.realsense.type.HoleFillingType;
-import ch.bildspur.realsense.type.IRStream;
-import ch.bildspur.realsense.type.StreamType;
+import ch.bildspur.realsense.type.*;
 import org.intel.rs.Context;
 import org.intel.rs.device.Device;
 import org.intel.rs.device.DeviceList;
@@ -229,6 +226,19 @@ public class RealSenseCamera implements PConstants {
         spatialFilter.setOption(Option.FilterSmoothAlpha, smoothAlpha);
         spatialFilter.setOption(Option.FilterSmoothDelta, smoothDelta);
         spatialFilter.setOption(Option.HolesFill, holeFilling);
+    }
+
+    public void addTemporalFilter() {
+        addTemporalFilter(0.4f, 20, PersistencyIndex.ValidIn2_Last4);
+    }
+
+    public void addTemporalFilter(float smoothAlpha, int smoothDelta, PersistencyIndex persistencyIndex) {
+        temporalFilter.init(new TemporalFilter());
+        addFilter(temporalFilter);
+
+        temporalFilter.setOption(Option.FilterSmoothAlpha, smoothAlpha);
+        temporalFilter.setOption(Option.FilterSmoothDelta, smoothDelta);
+        temporalFilter.setOption(Option.FilterOption, persistencyIndex.getIndex());
     }
 
     public void addThresholdFilter(float minDistance, float maxDistance) {
