@@ -2,6 +2,7 @@ package ch.bildspur.realsense.test;
 
 
 import ch.bildspur.realsense.RealSenseCamera;
+import ch.bildspur.realsense.type.ColorScheme;
 import processing.core.PApplet;
 import processing.opengl.PJOGL;
 
@@ -43,7 +44,7 @@ public class ColorizerTest extends PApplet {
         camera.enableDepthStream();
         camera.enableColorStream();
 
-        camera.enableColorizer();
+        camera.enableColorizer(ColorScheme.Classic);
 
         camera.start();
     }

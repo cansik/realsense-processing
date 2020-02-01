@@ -1,7 +1,7 @@
 package ch.bildspur.realsense.test;
 
 
-import ch.bildspur.realsense.IRStream;
+import ch.bildspur.realsense.type.IRStream;
 import ch.bildspur.realsense.RealSenseCamera;
 import processing.core.PApplet;
 import processing.opengl.PJOGL;

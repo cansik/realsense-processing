@@ -4,6 +4,8 @@ import ch.bildspur.realsense.processing.RSProcessingBlock;
 import ch.bildspur.realsense.stream.DepthRSStream;
 import ch.bildspur.realsense.stream.RSStream;
 import ch.bildspur.realsense.stream.VideoRSStream;
+import ch.bildspur.realsense.type.ColorScheme;
+import ch.bildspur.realsense.type.IRStream;
 import org.intel.rs.Context;
 import org.intel.rs.device.Device;
 import org.intel.rs.device.DeviceList;
@@ -11,11 +13,14 @@ import org.intel.rs.frame.DepthFrame;
 import org.intel.rs.frame.Frame;
 import org.intel.rs.frame.FrameList;
 import org.intel.rs.frame.VideoFrame;
+import org.intel.rs.option.CameraOption;
 import org.intel.rs.pipeline.Config;
 import org.intel.rs.pipeline.Pipeline;
 import org.intel.rs.pipeline.PipelineProfile;
+import org.intel.rs.processing.Align;
 import org.intel.rs.processing.Colorizer;
 import org.intel.rs.types.Format;
+import org.intel.rs.types.Option;
 import org.intel.rs.types.Stream;
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -39,8 +44,9 @@ public class RealSenseCamera implements PConstants {
 
     // processors
     RSProcessingBlock<Colorizer> colorizer = new RSProcessingBlock<>();
+    RSProcessingBlock<Align> align = new RSProcessingBlock<>();
 
-    RSProcessingBlock[] blocks = {colorizer};
+    RSProcessingBlock[] blocks = {colorizer, align};
 
     // internal objects
     private FrameList frames;
@@ -121,7 +127,19 @@ public class RealSenseCamera implements PConstants {
 
     // Processors
     public void enableColorizer() {
+        enableColorizer(ColorScheme.Jet);
+    }
+
+    public void enableColorizer(ColorScheme scheme) {
         colorizer.init(new Colorizer());
+
+        // set color scheme settings
+        CameraOption colorScheme = colorizer.getBlock().getOptions().get(Option.ColorScheme);
+        colorScheme.setValue(scheme.getIndex());
+    }
+
+    public void enableAlign() {
+        //align.init(new Align());
     }
 
     // Frame Handling
