@@ -1,4 +1,4 @@
-group 'ch.bildspur.realsense'
+group 'ch.bildspur'
 version '1.0'
 
 apply plugin: 'java'
@@ -7,6 +7,7 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 configurations {
@@ -21,12 +22,11 @@ javadoc {
 
 dependencies {
     // release
-    releaseJars files('lib/librealsensejava-SNAPSHOT.jar')
+    releaseJars 'com.github.cansik:librealsense-java:0.1'
 
     // compile
     testCompile group: 'junit', name: 'junit', version: '4.11'
-
-    compile files('lib/librealsensejava-SNAPSHOT.jar')
+    compile 'com.github.cansik:librealsense-java:0.1'
 
     // processing
     compile group: 'org.processing', name: 'core', version: '3.3.7'
