@@ -310,13 +310,15 @@ public class RealSenseCamera implements PConstants {
         if (depth == null)
             return -1;
 
-        // todo: maybe a memory leak
-        return depth.getDistance(x, y);
+        float distance = depth.getDistance(x, y);
+        depth.release();
+        return distance;
     }
 
     public short[][] getDepthData() {
-        // todo: maybe a memory leak
-        depthStream.updateDepthData(frames.getDepthFrame());
+        DepthFrame frame = frames.getDepthFrame();
+        depthStream.updateDepthData(frame);
+        frame.release();
         return depthStream.getData();
     }
 
