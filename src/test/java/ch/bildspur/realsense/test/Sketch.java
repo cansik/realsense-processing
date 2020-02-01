@@ -1,6 +1,7 @@
 package ch.bildspur.realsense.test;
 
 
+import ch.bildspur.realsense.IRStream;
 import ch.bildspur.realsense.RealSenseCamera;
 import processing.core.PApplet;
 import processing.opengl.PJOGL;
@@ -40,10 +41,8 @@ public class Sketch extends PApplet {
             System.exit(1);
         }
 
-        camera.enableDepthStream();
+        camera.enableIRStream(640, 480, 30, IRStream.Second);
         camera.enableColorStream();
-
-        camera.enableColorizer();
 
         camera.start();
     }
@@ -55,21 +54,12 @@ public class Sketch extends PApplet {
         camera.readFrames();
 
         // show both streams
-        //image(camera.getDepthImage(), 0, 0, VIEW_WIDTH, VIEW_HEIGHT);
-        image(camera.getIRImage(), 0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+        image(camera.getIRImage(IRStream.Second), 0, 0, VIEW_WIDTH, VIEW_HEIGHT);
         image(camera.getColorImage(), VIEW_WIDTH, 0, VIEW_WIDTH, VIEW_HEIGHT);
-
-        // show depth info
-        if(mouseX < VIEW_WIDTH && mouseY < VIEW_HEIGHT)
-        {
-            // show depth info
-            fill(0, 255, 0);
-            text("Depth: " + camera.getDistance(mouseX, mouseY), mouseX, mouseY + 10);
-        }
 
         fill(255, 255, 255);
         textAlign(LEFT, CENTER);
-        text("Depth Stream", 20, VIEW_HEIGHT  + 8);
+        text("IR Stream", 20, VIEW_HEIGHT  + 8);
         text("Color Stream", VIEW_WIDTH + 20, VIEW_HEIGHT  + 8);
         surface.setTitle("RealSense Processing - FPS: " + Math.round(frameRate));
     }
