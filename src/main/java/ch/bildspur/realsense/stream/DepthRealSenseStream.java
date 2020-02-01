@@ -13,4 +13,8 @@ public class DepthRealSenseStream extends VideoRealSenseStream {
         // todo: check which format (x, y) or (y, x)
         data = new short[width][height];
     }
+
+    public short[][] getData() {
+        return data;
+    }
 }

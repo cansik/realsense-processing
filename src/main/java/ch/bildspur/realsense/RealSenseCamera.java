@@ -15,6 +15,7 @@ import org.intel.rs.types.Format;
 import org.intel.rs.types.Stream;
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PImage;
 
 public class RealSenseCamera implements PConstants {
     // processing
@@ -116,6 +117,19 @@ public class RealSenseCamera implements PConstants {
 
 
 
+    // Frame Handling
+    /**
+     * Read the camera frame buffers for all enabled streams.
+     */
+    public void readFrames() {
+        // release previous
+        if (frames != null)
+            frames.release();
+
+        // read frames from camera
+        frames = pipeline.waitForFrames();
+    }
+
     // Camera control
 
     /**
@@ -215,4 +229,30 @@ public class RealSenseCamera implements PConstants {
         colorizer.release();
         context.release();
     }
+
+    // Image / Data Getters
+    public short[][] getDepth() {
+        return depthStream.getData();
+    }
+
+    public PImage getDepthImage() {
+        return depthStream.getImage();
+    }
+
+    public PImage getColorImage() {
+        return colorStream.getImage();
+    }
+
+    public PImage getIRImage() {
+        return getIRImage(IRStream.First);
+    }
+
+    public PImage getIRImage(IRStream irStream) {
+        VideoRealSenseStream stream = irStream == IRStream.First ? firstIRStream : secondIRStream;
+        return stream.getImage();
+    }
+
+    // Methods to keep old API valid (will be removed soon!)
+
+    // Other Getters
 }
