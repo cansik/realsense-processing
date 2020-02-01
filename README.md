@@ -40,7 +40,7 @@ Use the contribution manager inside Processing to directly install the library i
 
 ![Contribution Manager](readme/contribution.png)
 
-### Gradle / Maven
+### Gradle / Maven
 Include the library directly into your gradle / maven build by using [jitpack](https://jitpack.io/#cansik/realsense-processing/latest).
 
 ```groovy
