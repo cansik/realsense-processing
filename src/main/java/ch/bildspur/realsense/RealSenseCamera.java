@@ -217,6 +217,20 @@ public class RealSenseCamera implements PConstants {
         holeFillingFilter.setOption(Option.HolesFill, fillingType.getIndex());
     }
 
+    public void addSpatialFilter() {
+        addSpatialFilter(2, 0.5f, 20, 0);
+    }
+
+    public void addSpatialFilter(int filterMagnitude, float smoothAlpha, int smoothDelta, int holeFilling) {
+        spatialFilter.init(new SpatialFilter());
+        addFilter(spatialFilter);
+
+        spatialFilter.setOption(Option.FilterMagnitude, filterMagnitude);
+        spatialFilter.setOption(Option.FilterSmoothAlpha, smoothAlpha);
+        spatialFilter.setOption(Option.FilterSmoothDelta, smoothDelta);
+        spatialFilter.setOption(Option.HolesFill, holeFilling);
+    }
+
     public void addThresholdFilter(float minDistance, float maxDistance) {
         thresholdFilter.init(new ThresholdFilter());
         addFilter(thresholdFilter);
