@@ -119,6 +119,27 @@ public class RealSenseCamera implements PConstants {
     // Camera control
 
     /**
+     * Returns true if a device is available.
+     *
+     * @return True if device is available.
+     */
+    public boolean isCameraAvailable() {
+        return getCameraCount() > 0;
+    }
+
+    /**
+     * Returns how many devices are connected.
+     *
+     * @return Returns how many devices are connected.
+     */
+    public int getCameraCount() {
+        DeviceList deviceList = this.context.queryDevices();
+        int count = deviceList.count();
+        deviceList.release();
+        return count;
+    }
+
+    /**
      * Starts the first camera.
      */
     public synchronized void start() {
