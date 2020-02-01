@@ -86,6 +86,10 @@ public class RealSenseCamera implements PConstants {
 
     // Streams
 
+    /**
+     * Enable a new RealSense camera stream.
+     * @param stream The stream to enable.
+     */
     public void enableStream(RSStream stream) {
         config.enableStream(
                 stream.getStreamType(),
@@ -97,9 +101,13 @@ public class RealSenseCamera implements PConstants {
         );
     }
 
+    /**
+     * Enable a new depth stream with default configuration.
+     */
     public void enableDepthStream() {
         enableDepthStream(defaultWidth, defaultHeight);
     }
+
 
     public void enableDepthStream(int width, int height) {
         enableDepthStream(width, height, defaultFrameRate);
@@ -110,6 +118,9 @@ public class RealSenseCamera implements PConstants {
         enableStream(depthStream);
     }
 
+    /**
+     * Enable a new color stream with default configuration.
+     */
     public void enableColorStream() {
         enableColorStream(defaultWidth, defaultHeight);
     }
@@ -123,6 +134,9 @@ public class RealSenseCamera implements PConstants {
         enableStream(colorStream);
     }
 
+    /**
+     * Enable a new infrared stream with default configuration.
+     */
     public void enableIRStream() {
         enableIRStream(defaultWidth, defaultHeight);
     }
@@ -186,6 +200,7 @@ public class RealSenseCamera implements PConstants {
 
     /**
      * Read the camera frame buffers for all enabled streams.
+     * Applies filters and processors to the streams.
      */
     public void readFrames() {
         // release previous (needed for depth extraction)

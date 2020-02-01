@@ -1,7 +1,6 @@
 package ch.bildspur.realsense.test;
 
 
-import ch.bildspur.realsense.ProcessingColorUtil;
 import ch.bildspur.realsense.RealSenseCamera;
 import processing.core.PApplet;
 import processing.opengl.PJOGL;
@@ -77,13 +76,5 @@ public class RawDepthBufferTest extends PApplet {
         text("Raw Depth Data", 20, VIEW_HEIGHT  + 8);
         text("Depth Stream", VIEW_WIDTH + 20, VIEW_HEIGHT  + 8);
         surface.setTitle("RealSense Processing - FPS: " + Math.round(frameRate));
-    }
-
-    @Override
-    public void keyPressed() {
-        super.keyPressed();
-
-        //camera.stop();
-        //System.exit(0);
     }
 }
