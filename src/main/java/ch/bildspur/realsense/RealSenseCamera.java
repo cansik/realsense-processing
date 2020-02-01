@@ -241,6 +241,20 @@ public class RealSenseCamera implements PConstants {
         temporalFilter.setOption(Option.FilterOption, persistencyIndex.getIndex());
     }
 
+    public void addUnitsTransform() {
+        unitsTransform.init(new UnitsTransform());
+        addFilter(unitsTransform);
+
+        // todo: are there no options available?
+    }
+
+    public void addZeroOrderInvalidationFilter() {
+        zeroOrderInvalidationFilter.init(new ZeroOrderInvalidationFilter());
+        addFilter(zeroOrderInvalidationFilter);
+
+        // todo: are there no options available?
+    }
+
     public void addThresholdFilter(float minDistance, float maxDistance) {
         thresholdFilter.init(new ThresholdFilter());
         addFilter(thresholdFilter);
