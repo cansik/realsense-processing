@@ -37,7 +37,7 @@ public class Sketch extends PApplet {
         }
         else {
             println("No camera available!");
-            exit();
+            System.exit(1);
         }
 
         camera.start(640, 480, 30, false, true, true);
