@@ -1,60 +1,45 @@
 package ch.bildspur.realsense;
 
+import ch.bildspur.realsense.stream.DepthRealSenseStream;
+import ch.bildspur.realsense.stream.RealSenseStream;
+import ch.bildspur.realsense.stream.VideoRealSenseStream;
 import org.intel.rs.Context;
 import org.intel.rs.device.Device;
 import org.intel.rs.device.DeviceList;
-import org.intel.rs.frame.DepthFrame;
-import org.intel.rs.frame.Frame;
 import org.intel.rs.frame.FrameList;
-import org.intel.rs.frame.VideoFrame;
-import org.intel.rs.option.CameraOption;
 import org.intel.rs.pipeline.Config;
 import org.intel.rs.pipeline.Pipeline;
 import org.intel.rs.pipeline.PipelineProfile;
 import org.intel.rs.processing.Colorizer;
 import org.intel.rs.types.Format;
-import org.intel.rs.types.Option;
 import org.intel.rs.types.Stream;
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PImage;
 
-import java.nio.ByteBuffer;
-
-/**
- * Intel RealSense Camera
- */
 public class RealSenseCamera implements PConstants {
     // processing
     private PApplet parent;
 
     // realsense
-    private Context context;
-    private Pipeline pipeline;
+    private Context context = new Context();
+    private Config config = new Config();
+    private Pipeline pipeline = new Pipeline(context);
     private PipelineProfile pipelineProfile;
 
-    private Colorizer colorizer;
+    // streams
+    VideoRealSenseStream colorStream = new VideoRealSenseStream();
+    DepthRealSenseStream depthStream = new DepthRealSenseStream();
+    VideoRealSenseStream firstIRStream = new VideoRealSenseStream();
+    VideoRealSenseStream secondIRStream = new VideoRealSenseStream();
 
-    private final int depthStreamIndex = 0;
-    private final int colorStreamIndex = 0;
-    private final int irStreamIndex = 1;
+    // processors
+    Colorizer colorizer;
+
+    // internal objects
+    private FrameList frames;
 
     // camera
     private volatile boolean running = false;
-
-    private int width;
-    private int height;
-    private int fps;
-
-    private boolean enableDepthStream;
-    private boolean enableColorStream;
-    private boolean enableIRStream;
-
-    private PImage depthImage;
-    private PImage colorImage;
-    private PImage irImage;
-
-    private FrameList frames;
 
     /**
      * Create a new Intel RealSense camera.
@@ -66,22 +51,80 @@ public class RealSenseCamera implements PConstants {
 
         // register shutdown handler
         Runtime.getRuntime().addShutdownHook(new Thread(this::release));
-
-        // create context
-        context = new Context();
     }
 
+    // Streams
+
+    public void enableStream(RealSenseStream stream) {
+        config.enableStream(
+                stream.getStreamType(),
+                stream.getIndex(),
+                stream.getWidth(),
+                stream.getHeight(),
+                stream.getFormat(),
+                stream.getFps()
+        );
+    }
+
+    public void enableDepthStream() {
+        enableDepthStream(640, 480);
+    }
+
+    public void enableDepthStream(int width, int height) {
+        enableDepthStream(width, height, 30);
+    }
+
+    public void enableDepthStream(int width, int height, int fps) {
+        depthStream.init(Stream.Depth, 0, width, height, Format.Z16, fps);
+        enableStream(depthStream);
+    }
+
+    public void enableColorStream() {
+        enableColorStream(640, 480);
+    }
+
+    public void enableColorStream(int width, int height) {
+        enableColorStream(width, height, 30);
+    }
+
+    public void enableColorStream(int width, int height, int fps) {
+        colorStream.init(Stream.Color, 0, width, height, Format.Rgb8, fps);
+        enableStream(colorStream);
+    }
+
+    public void enableIRStream() {
+        enableIRStream(640, 480);
+    }
+
+    public void enableIRStream(int width, int height) {
+        enableIRStream(width, height, 30);
+    }
+
+    public void enableIRStream(int width, int height, int fps) {
+        enableIRStream(width, height, fps, IRStream.First);
+    }
+
+    public void enableIRStream(int width, int height, int fps, IRStream irStream) {
+        int streamIndex = irStream == IRStream.First ? 1 : 2;
+        VideoRealSenseStream stream = irStream == IRStream.First ? firstIRStream : secondIRStream;
+
+        stream.init(Stream.Infrared, streamIndex, width, height, Format.Y8, fps);
+        enableStream(stream);
+    }
+
+    // Processors
+
+
+
+    // Camera control
+
     /**
-     * Start the camera.
-     *
-     * @param width             Width of the camera image.
-     * @param height            Height of the camera image.
-     * @param fps               Frames per second to capture.
-     * @param enableDepthStream True if depth stream should be enabled.
-     * @param enableColorStream True if color stream should be enabled.
-     * @param enableIRStream    True if first IR stream should be enabled.
+     * Starts the first camera.
      */
-    public void start(int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream, boolean enableIRStream) {
+    public synchronized void start() {
+        if (running)
+            return;
+
         DeviceList deviceList = this.context.queryDevices();
 
         if (deviceList.count() == 0) {
@@ -89,89 +132,20 @@ public class RealSenseCamera implements PConstants {
             return;
         }
 
-        this.start(deviceList.get(0), width, height, fps, enableDepthStream, enableColorStream, enableIRStream);
+        this.start(deviceList.get(0));
+        deviceList.release();
     }
 
     /**
-     * Start the camera.
-     *
-     * @param device            Intel RealSense device to start.
-     * @param width             Width of the camera image.
-     * @param height            Height of the camera image.
-     * @param fps               Frames per second to capture.
-     * @param enableDepthStream True if depth stream should be enabled.
-     * @param enableColorStream True if color stream should be enabled.
+     * Starts the camera.
+     * @param device Camera device to start.
      */
-    public void start(Device device, int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream) {
-
-    }
-
-    /**
-     * Start the camera.
-     *
-     * @param device            Intel RealSense device to start.
-     * @param width             Width of the camera image.
-     * @param height            Height of the camera image.
-     * @param fps               Frames per second to capture.
-     * @param enableDepthStream True if depth stream should be enabled.
-     * @param enableColorStream True if color stream should be enabled.
-     * @param enableIRStream    True if first IR stream should be enabled.
-     */
-    public void start(Device device, int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream, boolean enableIRStream) {
+    public synchronized void start(Device device) {
         if (running)
             return;
 
-        pipeline = new Pipeline(context);
-
-        // set configuration
-        this.width = width;
-        this.height = height;
-        this.fps = fps;
-        this.enableDepthStream = enableDepthStream;
-        this.enableColorStream = enableColorStream;
-        this.enableIRStream = enableIRStream;
-
-        // create images
-        this.depthImage = new PImage(this.width, this.height, PConstants.RGB);
-        this.colorImage = new PImage(this.width, this.height, PConstants.RGB);
-        this.irImage = new PImage(this.width, this.height, PConstants.RGB);
-
-        // create pipeline
-        colorizer = new Colorizer();
-
-        Config config = new Config();
+        // set device
         config.enableDevice(device.getSerialNumber());
-
-        // set color scheme settings
-        CameraOption colorScheme = colorizer.getOptions().get(Option.ColorScheme);
-        colorScheme.setValue(2);
-
-        if (this.enableDepthStream) {
-            config.enableStream(Stream.Depth,
-                    this.depthStreamIndex,
-                    this.width,
-                    this.height,
-                    Format.Z16,
-                    this.fps);
-        }
-
-        if (this.enableColorStream) {
-            config.enableStream(Stream.Color,
-                    this.colorStreamIndex,
-                    this.width,
-                    this.height,
-                    Format.Rgb8,
-                    this.fps);
-        }
-
-        if (this.enableIRStream) {
-            config.enableStream(Stream.Infrared,
-                    this.irStreamIndex,
-                    this.width,
-                    this.height,
-                    Format.Y8,
-                    this.fps);
-        }
 
         // start pipeline
         pipelineProfile = pipeline.start(config);
@@ -180,54 +154,9 @@ public class RealSenseCamera implements PConstants {
     }
 
     /**
-     * Read the camera frame buffers for all active streams.
+     * Stops the camera.
      */
-    public void readFrames() {
-        // release previous
-        if (frames != null)
-            frames.release();
-
-        frames = pipeline.waitForFrames();
-
-        if (this.enableDepthStream) {
-            DepthFrame frame = frames.getDepthFrame();
-            VideoFrame coloredFrame = colorizer.colorize(frame);
-
-            coloredFrame.copyTo(depthImage.pixels);
-            depthImage.updatePixels();
-
-            coloredFrame.release();
-            frame.release();
-        }
-
-        if (this.enableColorStream) {
-            VideoFrame frame = frames.getColorFrame();
-            frame.copyTo(this.colorImage.pixels);
-            this.colorImage.updatePixels();
-            frame.release();
-        }
-
-        if (this.enableIRStream) {
-            Frame frame = frames.getFirstOrDefault(Stream.Infrared);
-            readIRImage(frame);
-            frame.release();
-        }
-    }
-
-    /**
-     * Returns true if a device is available.
-     *
-     * @return True if device is available.
-     */
-    public boolean isCameraAvailable() {
-        DeviceList deviceList = this.context.queryDevices();
-        return deviceList.count() > 0;
-    }
-
-    /**
-     * Stop the camera.
-     */
-    public void stop() {
+    public synchronized void stop() {
         if (!running)
             return;
 
@@ -238,74 +167,31 @@ public class RealSenseCamera implements PConstants {
         pipeline.stop();
         pipeline.release();
 
+        pipeline = new Pipeline(context);
+
         // set states
         running = false;
     }
 
+    /**
+     * Resets the stream and processor settings.
+     */
+    public synchronized void reset() {
+        stop();
+
+        config.release();
+        config = new Config();
+    }
+
+    /**
+     * Frees all the resources acquired by the camera.
+     */
     public synchronized void release() {
         stop();
 
+        config.release();
+        pipeline.release();
         colorizer.release();
         context.release();
-    }
-
-    private void readIRImage(Frame frame) {
-        ByteBuffer buffer = frame.getData();
-        for (int i = 0; i < width * height; i++) {
-            int irvalue = buffer.get(i) & 0xFF;
-            irImage.pixels[i] = toColor(irvalue);
-        }
-
-        irImage.updatePixels();
-    }
-
-    private int toColor(int gray) {
-        return toColor(gray, gray, gray);
-    }
-
-    private int toColor(int red, int green, int blue) {
-        return -16777216 | red << 16 | green << 8 | blue;
-    }
-
-    /**
-     * Check if the camera is already running.
-     *
-     * @return True if the camera is already running.
-     */
-    public boolean isRunning() {
-        return running;
-    }
-
-    public PImage getDepthImage() {
-        return depthImage;
-    }
-
-    public PImage getColorImage() {
-        return colorImage;
-    }
-
-    public PImage getIRImage() {
-        return irImage;
-    }
-
-    /**
-     * Returns depth at specific position.
-     * Returns -1 if no depth frame was captured.
-     * Returns -2 if no frames were captured at all.
-     *
-     * @param x X coordinate.
-     * @param y Y coordinate.
-     * @return Distance value.
-     */
-    public float getDistance(int x, int y) {
-        if (frames == null)
-            return -2;
-
-        DepthFrame depth = frames.getDepthFrame();
-
-        if (depth == null)
-            return -1;
-
-        return depth.getDistance(x, y);
     }
 }
