@@ -170,7 +170,7 @@ public class RealSenseCamera implements PConstants {
 
         if (secondIRStream.isEnabled()) {
             VideoFrame frame = getStreamByIndex(frames, Stream.Infrared, Format.Any, secondIRStream.getIndex());
-            firstIRStream.copyPixels(frame);
+            secondIRStream.copyPixels(frame);
             frame.release();
         }
     }
