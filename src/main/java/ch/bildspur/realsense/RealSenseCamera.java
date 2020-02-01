@@ -101,6 +101,20 @@ public class RealSenseCamera implements PConstants {
      * @param fps               Frames per second to capture.
      * @param enableDepthStream True if depth stream should be enabled.
      * @param enableColorStream True if color stream should be enabled.
+     */
+    public void start(Device device, int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream) {
+
+    }
+
+    /**
+     * Start the camera.
+     *
+     * @param device            Intel RealSense device to start.
+     * @param width             Width of the camera image.
+     * @param height            Height of the camera image.
+     * @param fps               Frames per second to capture.
+     * @param enableDepthStream True if depth stream should be enabled.
+     * @param enableColorStream True if color stream should be enabled.
      * @param enableIRStream    True if first IR stream should be enabled.
      */
     public void start(Device device, int width, int height, int fps, boolean enableDepthStream, boolean enableColorStream, boolean enableIRStream) {

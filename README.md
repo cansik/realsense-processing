@@ -5,20 +5,19 @@ Intel RealSense 2 support for the [Processing](https://processing.org/) framewor
 
 ## Introduction
 
-**Intel RealSense for Procesing** is a port of the **[Intel RealSense](https://github.com/IntelRealSense/librealsense)** library for processing. With this library it is possible to use the Intel RealSense D400 camera series within processing.
+**Intel RealSense for Procesing** is a port of the **[Intel RealSense](https://github.com/IntelRealSense/librealsense)** library for processing. With this library it is possible to use the Intel RealSense D400 camera series within processing. The idea is **not** to expose the full API into Processing, however a simple and convenient way to work with RealSense devices. For full API support switching over to the underlying [java wrapper](https://github.com/cansik/librealsense-java) is recommended.
 
 Supported Intel RealSense Version: [2.29.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.29.0)
 
 #### ![#f03c15](https://placehold.it/12/f03c15/000000?text=+) Important
 
 - Currently the library is still under development.
-- `Linux`, `MacOS` and `Windows` binaries are bundled in the jar.
-- The library is not multithreaded, so there will be performance issues.
+- `Linux`, `MacOS` and `Windows` binaries (x86 / x64) are already bundled into the Jar file.
 - The proof of concept of this library can be found here: [proof-of-concept](https://github.com/cansik/realsense-processing/tree/master/proof-of-concept).
 
 
 #### Supported Configurations
-Here are some configurations I have tested and which are working with the Intel RealSense D435. Please make sure you are using a USB 3 cable!
+Here are some configurations I have tested and which are working with the Intel RealSense D435. Please make sure you are using a USB 3.0 or 3.1 cable!
 
 | width | height | fps                         | depth stream | color stream |
 |-------|--------|-----------------------------|--------------|--------------|
@@ -34,6 +33,27 @@ Here are some configurations I have tested and which are working with the Intel 
 | 1920  | 1080   | `6`, `15`, `30`             | ❌            | ✅            |
 
 ## Installation
+There are multiple ways on how to install the library for this repository into your project.
+
+### Contribution Manager
+Use the contribution manager inside Processing to directly install the library into your local Processing instance.
+
+![Contribution Manager](readme/contribution.png)
+
+### Gradle / Maven
+Include the library directly into your gradle / maven build by using [jitpack](https://jitpack.io/#cansik/realsense-processing/latest).
+
+```groovy
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.cansik:realsense-processing:latest'
+}
+```
+
+### Manual
 
 Download the [latest build](https://github.com/cansik/realsense-processing/releases/tag/contributed) and extract the files into your [processing library](https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library) folder.
 
@@ -77,4 +97,4 @@ void draw()
 
 ## About
 
-The processing library is maintained by [@cansik](https://github.com/cansik) and based on the native Intel RealSense [java wrapper](https://github.com/cansik/librealsense-java).
+The processing library is maintained by [@cansik](https://github.com/cansik) and based on the Intel RealSense [Java wrapper](https://github.com/cansik/librealsense-java).
