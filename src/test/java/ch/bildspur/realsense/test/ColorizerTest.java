@@ -15,7 +15,7 @@ public class ColorizerTest extends PApplet {
     public final static int VIEW_WIDTH = 640;
     public final static int VIEW_HEIGHT = 480;
 
-    public final static int FRAME_RATE = 120;
+    public final static int FRAME_RATE = 30;
 
     RealSenseCamera camera = new RealSenseCamera(this);
 
@@ -40,7 +40,12 @@ public class ColorizerTest extends PApplet {
             exit();
         }
 
-        camera.start(640, 480, 30, true, true, false);
+        camera.enableDepthStream();
+        camera.enableColorStream();
+
+        camera.enableColorizer();
+
+        camera.start();
     }
 
     public void draw() {

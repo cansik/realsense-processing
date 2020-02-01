@@ -40,7 +40,12 @@ public class Sketch extends PApplet {
             System.exit(1);
         }
 
-        camera.start(640, 480, 30, false, true, true);
+        camera.enableDepthStream();
+        camera.enableColorStream();
+
+        camera.enableColorizer();
+
+        camera.start();
     }
 
     public void draw() {
