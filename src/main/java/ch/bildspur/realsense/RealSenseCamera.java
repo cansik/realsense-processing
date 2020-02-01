@@ -292,7 +292,31 @@ public class RealSenseCamera implements PConstants {
     }
 
     // Image / Data Getters
-    public short[][] getDepth() {
+    /**
+     * Returns depth at specific position in the depth frame.
+     * Returns -1 if no depth frame was captured.
+     * Returns -2 if no frames were captured at all.
+     *
+     * @param x X coordinate.
+     * @param y Y coordinate.
+     * @return Distance value.
+     */
+    public float getDistance(int x, int y) {
+        if (frames == null)
+            return -2;
+
+        DepthFrame depth = frames.getDepthFrame();
+
+        if (depth == null)
+            return -1;
+
+        // todo: maybe a memory leak
+        return depth.getDistance(x, y);
+    }
+
+    public short[][] getDepthData() {
+        // todo: maybe a memory leak
+        depthStream.updateDepthData(frames.getDepthFrame());
         return depthStream.getData();
     }
 

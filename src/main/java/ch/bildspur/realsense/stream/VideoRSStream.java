@@ -49,13 +49,7 @@ public class VideoRSStream extends RSStream {
     }
 
     private void copyY8(VideoFrame frame) {
-        Pointer dataPtr = frame.getDataPointer();
-        int size = frame.getDataSize();
-
-        BytePointer ptr = new BytePointer(dataPtr);
-        ptr.capacity(size);
-
-        ByteBuffer rawPixels = ptr.asBuffer();
+        ByteBuffer rawPixels = frame.getData();
 
         for (int i = 0; i < image.pixels.length; i++) {
             image.pixels[i] = toColor(rawPixels.get(i) & 0xFF);
