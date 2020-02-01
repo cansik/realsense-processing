@@ -6,6 +6,7 @@ import ch.bildspur.realsense.stream.DepthRSStream;
 import ch.bildspur.realsense.stream.RSStream;
 import ch.bildspur.realsense.stream.VideoRSStream;
 import ch.bildspur.realsense.type.ColorScheme;
+import ch.bildspur.realsense.type.HoleFillingType;
 import ch.bildspur.realsense.type.IRStream;
 import ch.bildspur.realsense.type.StreamType;
 import org.intel.rs.Context;
@@ -203,6 +204,17 @@ public class RealSenseCamera implements PConstants {
     public void addDisparityTransform(boolean depthToDisparity) {
         disparityTransform.init(new DisparityTransform(depthToDisparity));
         addFilter(disparityTransform);
+    }
+
+    public void addHoleFillingFilter() {
+        addHoleFillingFilter(HoleFillingType.FarestFromAround);
+    }
+
+    public void addHoleFillingFilter(HoleFillingType fillingType) {
+        holeFillingFilter.init(new HoleFillingFilter());
+        addFilter(holeFillingFilter);
+
+        holeFillingFilter.setOption(Option.HolesFill, fillingType.getIndex());
     }
 
     public void addThresholdFilter(float minDistance, float maxDistance) {
