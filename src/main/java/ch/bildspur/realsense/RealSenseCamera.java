@@ -1,16 +1,21 @@
 package ch.bildspur.realsense;
 
-import ch.bildspur.realsense.stream.DepthRealSenseStream;
-import ch.bildspur.realsense.stream.RealSenseStream;
-import ch.bildspur.realsense.stream.VideoRealSenseStream;
+import ch.bildspur.realsense.processing.RSProcessingBlock;
+import ch.bildspur.realsense.stream.DepthRSStream;
+import ch.bildspur.realsense.stream.RSStream;
+import ch.bildspur.realsense.stream.VideoRSStream;
 import org.intel.rs.Context;
 import org.intel.rs.device.Device;
 import org.intel.rs.device.DeviceList;
+import org.intel.rs.frame.DepthFrame;
+import org.intel.rs.frame.Frame;
 import org.intel.rs.frame.FrameList;
+import org.intel.rs.frame.VideoFrame;
 import org.intel.rs.pipeline.Config;
 import org.intel.rs.pipeline.Pipeline;
 import org.intel.rs.pipeline.PipelineProfile;
 import org.intel.rs.processing.Colorizer;
+import org.intel.rs.processing.ProcessingBlock;
 import org.intel.rs.types.Format;
 import org.intel.rs.types.Stream;
 import processing.core.PApplet;
@@ -28,13 +33,15 @@ public class RealSenseCamera implements PConstants {
     private PipelineProfile pipelineProfile;
 
     // streams
-    VideoRealSenseStream colorStream = new VideoRealSenseStream();
-    DepthRealSenseStream depthStream = new DepthRealSenseStream();
-    VideoRealSenseStream firstIRStream = new VideoRealSenseStream();
-    VideoRealSenseStream secondIRStream = new VideoRealSenseStream();
+    VideoRSStream colorStream = new VideoRSStream();
+    DepthRSStream depthStream = new DepthRSStream();
+    VideoRSStream firstIRStream = new VideoRSStream();
+    VideoRSStream secondIRStream = new VideoRSStream();
 
     // processors
-    Colorizer colorizer;
+    RSProcessingBlock<Colorizer> colorizer = new RSProcessingBlock<>();
+
+    RSProcessingBlock[] blocks = {colorizer};
 
     // internal objects
     private FrameList frames;
@@ -56,7 +63,7 @@ public class RealSenseCamera implements PConstants {
 
     // Streams
 
-    public void enableStream(RealSenseStream stream) {
+    public void enableStream(RSStream stream) {
         config.enableStream(
                 stream.getStreamType(),
                 stream.getIndex(),
@@ -107,27 +114,77 @@ public class RealSenseCamera implements PConstants {
 
     public void enableIRStream(int width, int height, int fps, IRStream irStream) {
         int streamIndex = irStream == IRStream.First ? 1 : 2;
-        VideoRealSenseStream stream = irStream == IRStream.First ? firstIRStream : secondIRStream;
+        VideoRSStream stream = irStream == IRStream.First ? firstIRStream : secondIRStream;
 
         stream.init(Stream.Infrared, streamIndex, width, height, Format.Y8, fps);
         enableStream(stream);
     }
 
     // Processors
-
-
+    public void enableColorizer() {
+        colorizer.init(new Colorizer());
+    }
 
     // Frame Handling
+
     /**
      * Read the camera frame buffers for all enabled streams.
      */
     public void readFrames() {
-        // release previous
+        // release previous (needed for depth extraction)
         if (frames != null)
             frames.release();
 
         // read frames from camera
         frames = pipeline.waitForFrames();
+
+        // todo: align frames if needed
+
+        // copy streams
+        if (depthStream.isEnabled()) {
+            DepthFrame frame = frames.getDepthFrame();
+
+            // todo: decimate frame if needed
+
+            // update colors if colorized is there
+            if(colorizer.isEnabled()) {
+                VideoFrame coloredFrame = colorizer.getBlock().colorize(frame);
+                depthStream.copyPixels(coloredFrame);
+                coloredFrame.release();
+            }
+
+            frame.release();
+        }
+
+        if (colorStream.isEnabled()) {
+            VideoFrame frame = frames.getColorFrame();
+            colorStream.copyPixels(frame);
+            frame.release();
+        }
+
+        if (firstIRStream.isEnabled()) {
+            VideoFrame frame = getStreamByIndex(frames, Stream.Infrared, Format.Any, firstIRStream.getIndex());
+            firstIRStream.copyPixels(frame);
+            frame.release();
+        }
+
+        if (secondIRStream.isEnabled()) {
+            VideoFrame frame = getStreamByIndex(frames, Stream.Infrared, Format.Any, secondIRStream.getIndex());
+            firstIRStream.copyPixels(frame);
+            frame.release();
+        }
+    }
+
+    private <T extends Frame> T getStreamByIndex(FrameList frames, Stream stream, Format format, int index) {
+        for (Frame frame : frames) {
+            if (frame.getProfile().getStream() == stream
+                    && (Format.Any == format || frame.getProfile().getFormat() == format)
+                    && frame.getProfile().getIndex() == index) {
+                return (T) frame;
+            }
+            frame.release();
+        }
+        return null;
     }
 
     // Camera control
@@ -173,6 +230,7 @@ public class RealSenseCamera implements PConstants {
 
     /**
      * Starts the camera.
+     *
      * @param device Camera device to start.
      */
     public synchronized void start(Device device) {
@@ -226,7 +284,10 @@ public class RealSenseCamera implements PConstants {
 
         config.release();
         pipeline.release();
-        colorizer.release();
+
+        for(RSProcessingBlock block : blocks)
+            block.release();
+
         context.release();
     }
 
@@ -248,7 +309,7 @@ public class RealSenseCamera implements PConstants {
     }
 
     public PImage getIRImage(IRStream irStream) {
-        VideoRealSenseStream stream = irStream == IRStream.First ? firstIRStream : secondIRStream;
+        VideoRSStream stream = irStream == IRStream.First ? firstIRStream : secondIRStream;
         return stream.getImage();
     }
 
