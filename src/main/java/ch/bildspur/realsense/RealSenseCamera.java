@@ -19,10 +19,7 @@ import org.intel.rs.option.CameraOption;
 import org.intel.rs.pipeline.Config;
 import org.intel.rs.pipeline.Pipeline;
 import org.intel.rs.pipeline.PipelineProfile;
-import org.intel.rs.processing.Align;
-import org.intel.rs.processing.Colorizer;
-import org.intel.rs.processing.FilterProcessingBlock;
-import org.intel.rs.processing.ThresholdFilter;
+import org.intel.rs.processing.*;
 import org.intel.rs.types.Format;
 import org.intel.rs.types.Option;
 import org.intel.rs.types.Stream;
@@ -55,12 +52,19 @@ public class RealSenseCamera implements PConstants {
     private VideoRSStream secondIRStream = new VideoRSStream();
 
     // processors
-    // todo: add syncer, pointcloud and
+    // todo: add syncer and pointcloud
     private RSProcessingBlock<Colorizer> colorizer = new RSProcessingBlock<>();
     private RSProcessingBlock<Align> align = new RSProcessingBlock<>();
 
     // filter processors
+    private RSFilterBlock decimationFilter = new RSFilterBlock();
+    private RSFilterBlock disparityTransform = new RSFilterBlock();
+    private RSFilterBlock holeFillingFilter = new RSFilterBlock();
+    private RSFilterBlock spatialFilter = new RSFilterBlock();
+    private RSFilterBlock temporalFilter = new RSFilterBlock();
     private RSFilterBlock thresholdFilter = new RSFilterBlock();
+    private RSFilterBlock unitsTransform = new RSFilterBlock();
+    private RSFilterBlock zeroOrderInvalidationFilter = new RSFilterBlock();
 
     // processor lists
     private RSProcessingBlock[] blocks = {colorizer, align};
@@ -164,8 +168,6 @@ public class RealSenseCamera implements PConstants {
 
     public void enableColorizer(ColorScheme scheme) {
         colorizer.init(new Colorizer());
-
-        // set color scheme settings
         colorizer.setOption(Option.ColorScheme, scheme.getIndex());
     }
 
@@ -183,11 +185,30 @@ public class RealSenseCamera implements PConstants {
         filters.add(filter);
     }
 
+    public void addDecimationFilter() {
+        addDecimationFilter(2);
+    }
+
+    public void addDecimationFilter(int filterMagnitude) {
+        decimationFilter.init(new DecimationFilter());
+        addFilter(decimationFilter);
+
+        decimationFilter.setOption(Option.FilterMagnitude, filterMagnitude);
+    }
+
+    public void addDisparityTransform() {
+        addDisparityTransform(true);
+    }
+
+    public void addDisparityTransform(boolean depthToDisparity) {
+        disparityTransform.init(new DisparityTransform(depthToDisparity));
+        addFilter(disparityTransform);
+    }
+
     public void addThresholdFilter(float minDistance, float maxDistance) {
         thresholdFilter.init(new ThresholdFilter());
         addFilter(thresholdFilter);
 
-        // set threshold settings
         thresholdFilter.setOption(Option.MinDistance, minDistance);
         thresholdFilter.setOption(Option.MaxDistance, maxDistance);
     }
