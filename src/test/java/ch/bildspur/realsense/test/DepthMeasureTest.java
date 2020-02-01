@@ -2,6 +2,7 @@ package ch.bildspur.realsense.test;
 
 
 import ch.bildspur.realsense.RealSenseCamera;
+import ch.bildspur.realsense.type.ColorScheme;
 import processing.core.PApplet;
 import processing.opengl.PJOGL;
 
@@ -43,7 +44,7 @@ public class DepthMeasureTest extends PApplet {
         camera.enableDepthStream();
         camera.enableColorStream();
 
-        camera.enableColorizer();
+        camera.enableColorizer(ColorScheme.Cold);
 
         camera.start();
     }
@@ -62,11 +63,13 @@ public class DepthMeasureTest extends PApplet {
         if(mouseX < VIEW_WIDTH && mouseY < VIEW_HEIGHT)
         {
             // show depth info
-            fill(0, 255, 0);
-            text("Depth: " + camera.getDistance(mouseX, mouseY), mouseX, mouseY + 10);
+            fill(255, 255, 0);
+            textSize(20);
+            text("Depth: " + nfp(camera.getDistance(mouseX, mouseY), 0, 2) + "m", mouseX, mouseY + 10);
         }
 
         fill(255, 255, 255);
+        textSize(12);
         textAlign(LEFT, CENTER);
         text("Depth Stream", 20, VIEW_HEIGHT  + 8);
         text("Color Stream", VIEW_WIDTH + 20, VIEW_HEIGHT  + 8);
