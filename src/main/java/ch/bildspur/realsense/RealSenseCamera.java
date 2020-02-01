@@ -6,6 +6,7 @@ import ch.bildspur.realsense.stream.RSStream;
 import ch.bildspur.realsense.stream.VideoRSStream;
 import ch.bildspur.realsense.type.ColorScheme;
 import ch.bildspur.realsense.type.IRStream;
+import ch.bildspur.realsense.type.StreamType;
 import org.intel.rs.Context;
 import org.intel.rs.device.Device;
 import org.intel.rs.device.DeviceList;
@@ -139,7 +140,11 @@ public class RealSenseCamera implements PConstants {
     }
 
     public void enableAlign() {
-        //align.init(new Align());
+        enableAlign(StreamType.Color);
+    }
+
+    public void enableAlign(StreamType streamType) {
+        align.init(new Align(streamType.getStream()));
     }
 
     // Frame Handling
@@ -155,7 +160,11 @@ public class RealSenseCamera implements PConstants {
         // read frames from camera
         frames = pipeline.waitForFrames();
 
-        // todo: align frames if needed
+        if(align.isEnabled()) {
+            FrameList temp = align.getBlock().process(frames);
+            frames.release();
+            frames = temp;
+        }
 
         // copy streams
         if (depthStream.isEnabled()) {
