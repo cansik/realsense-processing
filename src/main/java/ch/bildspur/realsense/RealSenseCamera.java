@@ -1,5 +1,6 @@
 package ch.bildspur.realsense;
 
+import ch.bildspur.realsense.processing.RSFilterBlock;
 import ch.bildspur.realsense.processing.RSProcessingBlock;
 import ch.bildspur.realsense.stream.DepthRSStream;
 import ch.bildspur.realsense.stream.RSStream;
@@ -20,12 +21,17 @@ import org.intel.rs.pipeline.Pipeline;
 import org.intel.rs.pipeline.PipelineProfile;
 import org.intel.rs.processing.Align;
 import org.intel.rs.processing.Colorizer;
+import org.intel.rs.processing.FilterProcessingBlock;
+import org.intel.rs.processing.ThresholdFilter;
 import org.intel.rs.types.Format;
 import org.intel.rs.types.Option;
 import org.intel.rs.types.Stream;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RealSenseCamera implements PConstants {
     private final int defaultWidth = 640;
@@ -43,16 +49,21 @@ public class RealSenseCamera implements PConstants {
     private PipelineProfile pipelineProfile;
 
     // streams
-    VideoRSStream colorStream = new VideoRSStream();
-    DepthRSStream depthStream = new DepthRSStream();
-    VideoRSStream firstIRStream = new VideoRSStream();
-    VideoRSStream secondIRStream = new VideoRSStream();
+    private VideoRSStream colorStream = new VideoRSStream();
+    private DepthRSStream depthStream = new DepthRSStream();
+    private VideoRSStream firstIRStream = new VideoRSStream();
+    private VideoRSStream secondIRStream = new VideoRSStream();
 
     // processors
-    RSProcessingBlock<Colorizer> colorizer = new RSProcessingBlock<>();
-    RSProcessingBlock<Align> align = new RSProcessingBlock<>();
+    private RSProcessingBlock<Colorizer> colorizer = new RSProcessingBlock<>();
+    private RSProcessingBlock<Align> align = new RSProcessingBlock<>();
 
-    RSProcessingBlock[] blocks = {colorizer, align};
+    // filter processors
+    private RSProcessingBlock<ThresholdFilter> thresholdFilter = new RSProcessingBlock<>();
+
+    // processor lists
+    private RSProcessingBlock[] blocks = {colorizer, align};
+    private List<RSFilterBlock> filters = new ArrayList<>();
 
     // internal objects
     private FrameList frames;
@@ -152,6 +163,16 @@ public class RealSenseCamera implements PConstants {
         align.init(new Align(streamType.getStream()));
     }
 
+    // Filters
+
+    public void addFilter(RSFilterBlock filter) {
+        filters.add(filter);
+    }
+
+    public void clearFilters() {
+        filters.clear();
+    }
+
     // Frame Handling
 
     /**
@@ -175,7 +196,14 @@ public class RealSenseCamera implements PConstants {
         if (depthStream.isEnabled()) {
             DepthFrame frame = frames.getDepthFrame();
 
-            // todo: decimate frame if needed
+            // apply depth filter
+            if(!filters.isEmpty()) {
+                for(RSFilterBlock filter : filters) {
+                    DepthFrame temp = filter.getBlock().process(frame);
+                    frame.release();
+                    frame = temp;
+                }
+            }
 
             // update colors if colorized is there
             if(colorizer.isEnabled()) {
