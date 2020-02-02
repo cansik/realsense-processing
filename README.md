@@ -11,9 +11,9 @@ Supported Intel RealSense Version: [2.29.0](https://github.com/IntelRealSense/li
 
 #### ![#f03c15](https://placehold.it/12/f03c15/000000?text=+) Important
 
+- If you were using **the old API** (PreReleases, dated Feb 2019) and do not want to update your sketch, download the [1.1.0 library](https://github.com/cansik/realsense-processing/releases/tag/1.1.0) form the releases and [install it manually](https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library#manual-install) into your processing library folder.
 - Currently the library is still under development.
 - `Linux`, `MacOS` and `Windows` binaries (x86 / x64) are already bundled into the Jar file.
-- If you were using **the old API** (PreReleases) and do not want to update your sketch, download the [1.1.0 library](https://github.com/cansik/realsense-processing/releases/tag/1.1.0) form the releases and install it manually into your processing library folder.
 
 
 #### Supported Configurations
@@ -109,9 +109,11 @@ void draw()
   // show images
   image(camera.getColorImage(), 0, 0);
   image(camera.getIRImage(), 640, 0);
-}```
+}
+```
 
 #### Infrared
+
 It is important to notice that the **D415** and **D430** cameras both support multiple infrared streams. To read both of them it is possible to tell the camera, which one to enable and to get. 
 
 ```processing
