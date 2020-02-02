@@ -1,8 +1,6 @@
 import ch.bildspur.realsense.*;
 import ch.bildspur.realsense.type.*;
 
-import ch.bildspur.realsense.*;
-
 RealSenseCamera camera = new RealSenseCamera(this);
 
 void setup()
