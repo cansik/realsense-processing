@@ -6,8 +6,8 @@ void setup()
 {
   size(640, 480);
   
-  // width, height, fps, depth-stream, color-stream
-  camera.start(640, 480, 30, false, true);
+  camera.enableColorStream(640, 480, 30);
+  camera.start();
 }
 
 void draw()
