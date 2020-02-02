@@ -1,4 +1,7 @@
 import ch.bildspur.realsense.*;
+import ch.bildspur.realsense.type.*;
+
+import ch.bildspur.realsense.*;
 
 RealSenseCamera camera = new RealSenseCamera(this);
 
@@ -6,8 +9,13 @@ void setup()
 {
   size(640, 480);
   
-  // width, height, fps, depth-stream, color-stream
-  camera.start(640, 480, 30, true, false);
+  // enable depth stream
+  camera.enableDepthStream(640, 480);
+  
+  // enable colorizer to display depth
+  camera.enableColorizer(ColorScheme.Cold);
+  
+  camera.start();
 }
 
 void draw()
@@ -16,10 +24,6 @@ void draw()
   
   // read frames
   camera.readFrames();
-  
-  // create grayscale image form depth buffer
-  // min and max depth
-  camera.createDepthImage(0, 3000);
   
   // show color image
   image(camera.getDepthImage(), 0, 0);
