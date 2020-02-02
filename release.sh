@@ -44,7 +44,7 @@ mkdir -p "$OUTPUT/library"
 cp -f library.properties "release/$ARCHIVE_NAME.txt"
 cp -a "build/libs/lib/." "$OUTPUT/library/"
 cp "build/libs/$ARCHIVE_NAME.jar" "$OUTPUT/library/"
-cp -r native "$OUTPUT/library/"
+# cp -r native "$OUTPUT/library/"
 cp -r "build/docs/javadoc" "$OUTPUT/reference"
 
 cp -r "examples" "$OUTPUT/"
