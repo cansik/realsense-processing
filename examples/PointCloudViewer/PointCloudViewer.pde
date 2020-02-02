@@ -9,6 +9,7 @@ import org.intel.rs.processing.DecimationFilter;
 import org.intel.rs.processing.ThresholdFilter;
 import org.intel.rs.types.Vertex;
 import org.intel.rs.frame.DepthFrame;
+import org.intel.rs.frame.VideoFrame;
 import org.intel.rs.types.Option;
 
 import peasy.PeasyCam;
@@ -44,10 +45,10 @@ void setup()
     cloud.vertex(0, 0, 0);
   }
   cloud.endShape();
-  
+
   // set threshold options
   thresholdFilter.getOptions().get(Option.MinDistance).setValue(0.0);
-  thresholdFilter.getOptions().get(Option.MaxDistance).setValue(1.0);
+  thresholdFilter.getOptions().get(Option.MaxDistance).setValue(1.8);
 
   // enable depth stream (limited to 1 meter)
   camera.enableDepthStream(streamWidth, streamHeight);
