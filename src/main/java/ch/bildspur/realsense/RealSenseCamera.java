@@ -13,7 +13,6 @@ import org.intel.rs.frame.DepthFrame;
 import org.intel.rs.frame.Frame;
 import org.intel.rs.frame.FrameList;
 import org.intel.rs.frame.VideoFrame;
-import org.intel.rs.option.CameraOption;
 import org.intel.rs.pipeline.Config;
 import org.intel.rs.pipeline.Pipeline;
 import org.intel.rs.pipeline.PipelineProfile;
@@ -442,6 +441,9 @@ public class RealSenseCamera implements PConstants {
         for(RSProcessingBlock block : blocks)
             block.release();
 
+        for(RSFilterBlock filter : filters)
+            filter.release();
+
         context.release();
     }
 
@@ -469,6 +471,10 @@ public class RealSenseCamera implements PConstants {
         return distance;
     }
 
+    /**
+     * Returns 2-dimensional short array which contains the depth buffer.
+     * @return Y / X short array of the raw depth buffer.
+     */
     public short[][] getDepthData() {
         DepthFrame frame = frames.getDepthFrame();
         depthStream.updateDepthData(frame);
@@ -497,4 +503,27 @@ public class RealSenseCamera implements PConstants {
 
     // Other Getters
 
+    public Context getContext() {
+        return context;
+    }
+
+    public Config getConfig() {
+        return config;
+    }
+
+    public Pipeline getPipeline() {
+        return pipeline;
+    }
+
+    public PipelineProfile getPipelineProfile() {
+        return pipelineProfile;
+    }
+
+    public FrameList getFrames() {
+        return frames;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
 }
