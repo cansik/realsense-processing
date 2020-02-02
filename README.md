@@ -13,7 +13,6 @@ Supported Intel RealSense Version: [2.29.0](https://github.com/IntelRealSense/li
 
 - Currently the library is still under development.
 - `Linux`, `MacOS` and `Windows` binaries (x86 / x64) are already bundled into the Jar file.
-- The proof of concept of this library can be found here: [proof-of-concept](https://github.com/cansik/realsense-processing/tree/master/proof-of-concept).
 
 
 #### Supported Configurations
