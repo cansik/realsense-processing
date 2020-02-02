@@ -9,6 +9,7 @@ import org.intel.rs.processing.DecimationFilter;
 import org.intel.rs.processing.ThresholdFilter;
 import org.intel.rs.types.Vertex;
 import org.intel.rs.frame.DepthFrame;
+import org.intel.rs.types.Option;
 
 import peasy.PeasyCam;
 
@@ -43,6 +44,10 @@ void setup()
     cloud.vertex(0, 0, 0);
   }
   cloud.endShape();
+  
+  // set threshold options
+  thresholdFilter.getOptions().get(Option.MinDistance).setValue(0.0);
+  thresholdFilter.getOptions().get(Option.MaxDistance).setValue(1.0);
 
   // enable depth stream (limited to 1 meter)
   camera.enableDepthStream(streamWidth, streamHeight);
@@ -58,13 +63,15 @@ void draw()
 
   // read pointcloud
   DepthFrame depthFrame = camera.getFrames().getDepthFrame();
-  DepthFrame decimatedFrame = decimationFilter.process(depthFrame);
+  DepthFrame thresholdedFrame = thresholdFilter.process(depthFrame);
+  DepthFrame decimatedFrame = decimationFilter.process(thresholdedFrame);
 
   // get points
   Points points = pointCloud.calculate(decimatedFrame);
   Vertex[] vertices = points.getVertices();
 
   points.release();
+  thresholdedFrame.release();
   decimatedFrame.release();
 
   // update cloud
