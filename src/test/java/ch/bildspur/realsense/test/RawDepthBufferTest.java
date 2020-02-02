@@ -60,7 +60,7 @@ public class RawDepthBufferTest extends PApplet {
         short[][] raw = camera.getDepthData();
         noStroke();
         for(int y = 0; y < raw.length; y += 10) {
-            for(int x = 0; x < raw.length; x += 10) {
+            for(int x = 0; x < raw[0].length; x += 10) {
                 int depth = raw[y][x];
 
                 // map raw data
