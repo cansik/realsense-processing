@@ -59,7 +59,7 @@ Download the [latest build](https://github.com/cansik/realsense-processing/relea
 
 ## Example
 
-Here are some examples which show how to use the library. You will find more [examples here](https://github.com/cansik/realsense-processing/tree/master/examples).
+Here are some examples which show how to use the library. You will find more [examples here](https://github.com/cansik/realsense-processing/tree/master/examples). (*The examples have been tested with an RealSense D430.*)
 
 ### Camera
 
@@ -83,7 +83,7 @@ At the moment the library does not support starting one specific camera. But thi
 
 ### Streams
 
-RealSense cameras usually are equiped with multiple Sensors. Mainly video but also depth and position sensors. To use the data streams of these sensors, you have to enable them before starting the camera. It is possible to use the default values (`640x480 30 FPS) or set your own settings. A complete list of valid settings can be found in the [RealSense Viewer](https://github.com/IntelRealSense/librealsense/tree/master/tools/realsense-viewer) app.
+RealSense cameras usually are equiped with multiple Sensors. Mainly video but also depth and position sensors. To use the data streams of these sensors, you have to enable them before starting the camera. It is possible to use the default values (`640x480 30 FPS`) or set your own settings. A complete list of valid settings can be found in the [RealSense Viewer](https://github.com/IntelRealSense/librealsense/tree/master/tools/realsense-viewer) app.
 
 After enabling the streams, you have to call the method `readFrames()` every time you are looking for new frames from the camera. If you do not call this method, your streams will always be black or not updated.
 
@@ -119,12 +119,12 @@ It is important to notice that the **D415** and **D430** cameras both support mu
 import ch.bildspur.realsense.type.*;
 
 void setup() {
-	...
+	//...
 	camera.enableIRStream(640, 480, 30, IRStream.Second);
 }
 
 void draw() {
-	...
+	//...
 	image(camera.getIRImage(IRStream.Second), 0, 0);
 }
 ```
@@ -162,7 +162,7 @@ It is possible to measure distance on a depth frame by using `getDistance(int x,
 
 ```processing
 void draw {
-	...
+	//...
 	float distance = camera.getDistance(mouseX, mouseY)
 }
 ```
@@ -183,9 +183,21 @@ for (int y = 0; y < height; y++) {
 ``` 
 
 ### Alignment
+To align all the incoming frames to one specific (by default `depth` to `color` frame), it is possible to enable the alignment as a preprocessor.
 
+```processing
+// enable color & depth stream
+camera.enableColorStream();
+camera.enableDepthStream();
+  
+// align the depth to the color stream
+camera.enableAlign();
+
+camera.start();
+```
 
 ### Filters
+It is possible to use all the filters
 
 ### Advanced
 
