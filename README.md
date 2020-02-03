@@ -202,6 +202,9 @@ camera.start();
 It is possible to use all the filters offered by the RealSense API inside processing. Just **add** the filter by using its add method. Some of the filters offer you to set the configuration settings while adding them. All of them support calling a default constructor (for example `addThresholdFilter()`) to use the default configuration.
 
 ```processing
+// include the following package for the types
+import ch.bildspur.realsense.type.*;
+
 // list of all supported filters
 camera.addThresholdFilter(0.0f, 1.0f);
 camera.addSpatialFilter(2, 0.5f, 20, 0);
