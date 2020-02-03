@@ -11,7 +11,7 @@ Supported Intel RealSense Version: [2.29.0](https://github.com/IntelRealSense/li
 
 #### ![#f03c15](https://placehold.it/12/f03c15/000000?text=+) Important
 
-- If you were using **the old API** (PreReleases, dated Feb 2019) and do not want to update your sketch, download the [1.1.0 library](https://github.com/cansik/realsense-processing/releases/tag/1.1.0) form the releases and [install it manually](https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library#manual-install) into your processing library folder.
+- If you were using **the old API** (PreReleases, dated Feb 2019) and do not want to update your sketch, download the [1.1.0 library](https://github.com/cansik/realsense-processing/releases/tag/1.1.0) from the releases and [install it manually](https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library#manual-install) into your processing library folder.
 - Currently the library is still under development.
 - `Linux`, `MacOS` and `Windows` binaries (x86 / x64) are already bundled into the Jar file.
 
@@ -59,7 +59,8 @@ Download the [latest build](https://github.com/cansik/realsense-processing/relea
 
 ## Example
 
-Here are some examples which show how to use the library. You will find more [examples here](https://github.com/cansik/realsense-processing/tree/master/examples). (*The examples have been tested with an RealSense D430.*)
+Here are some examples which show how to use the library. You will find more [examples here](https://github.com/cansik/realsense-processing/tree/master/examples). 
+(*The examples have been tested with an RealSense D430.*)
 
 ### Camera
 
@@ -198,9 +199,35 @@ camera.start();
 ```
 
 ### Filters
-It is possible to use all the filters
+It is possible to use all the filters offered by the RealSense API inside processing. Just **add** the filter by using its add method. Some of the filters offer you to set the configuration settings while adding them. All of them support calling a default constructor (for example `addThresholdFilter()`) to use the default configuration.
+
+```processing
+// list of all supported filters
+camera.addThresholdFilter(0.0f, 1.0f);
+camera.addSpatialFilter(2, 0.5f, 20, 0);
+camera.addDecimationFilter(2);
+camera.addDisparityTransform(true);
+camera.addHoleFillingFilter(HoleFillingType.FarestFromAround);
+camera.addTemporalFilter(0.4f, 20, PersistencyIndex.ValidIn2_Last4);
+camera.addUnitsTransform();
+camera.addZeroOrderInvalidationFilter();
+``` 
 
 ### Advanced
+For more advanced topics, the wrapper allows you to use the underlaying Java API through following getter methods.
+
+```processing
+// getters for interacting with the java API
+Context context = camera.getContext();
+Config config = camera.getConfig();
+Pipeline pipeline = camera.getPipeline();
+PipelineProfile profile = camera.getPipelineProfile();
+FrameList frames = camera.getFrames();
+```
+
+Also check out the following example, which uses this API getters to display a pointcloud.
+
+- [Pointcloud Example](https://github.com/cansik/realsense-processing/blob/master/examples/PointCloudViewer/PointCloudViewer.pde) (Advanced API)
 
 ## About
 
