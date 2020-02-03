@@ -175,14 +175,47 @@ It is important to notice that usually depth and color streams are not aligned, 
 To work with the raw depth data it is possible to enable the depth stream without the colorizer filter and start reading the depth data by using `getDepthData()`. This returns a 2-dimensional array of `short` with the `Y / X` order.
 
 ```processing
-short[][] data = camera.getDepthData();
+import ch.bildspur.realsense.*;
 
-for (int y = 0; y < height; y++) {
-	for (int x = 0; x < width; x++) {
-		int intensity = data[y][x];
-	}
-}  
+RealSenseCamera camera = new RealSenseCamera(this);
+PImage depthImg;
+
+void setup() {
+  size(640,480);
+  camera.enableDepthStream(640,480);
+  camera.start();
+  depthImg = new PImage(640,480);
+}
+
+int minDepth = 1000;  // 1 meter, if using default depth units
+int maxDepth = 2000;  // 2 meters
+void draw() {
+  
+  camera.readFrames();
+  short[][] data = camera.getDepthData();
+  
+  for (int y = 0; y < data.length; y++) {
+    for (int x = 0; x < data[y].length; x++) {
+      int depth = data[y][x];  // in depth units
+
+      int i = x + y * data[y].length; // Notice the YX order
+      depthImg.pixels[i] = (depth >= minDepth && depth <= maxDepth) 
+        ? color(255) : color(0);  // simple color by range  
+    }
+  }
+
+  depthImg.updatePixels();
+  image(depthImg, 0, 0);
+}
 ``` 
+
+Raw depth is an unsigned 16-bit (64k) unit-less value which is used `Depth unit`.   The default is 0.001m (1mm), and can be easily be modified in the realsense viewer app. 
+
+Also note the YX order, you can use something like:
+```processing
+int i = x + y * data[y].length;
+```
+
 
 ### Alignment
 To align all the incoming frames to one specific (by default `depth` to `color` frame), it is possible to enable the alignment as a preprocessor.
