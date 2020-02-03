@@ -60,7 +60,7 @@ Download the [latest build](https://github.com/cansik/realsense-processing/relea
 ## Example
 
 Here are some examples which show how to use the library. You will find more [examples here](https://github.com/cansik/realsense-processing/tree/master/examples). 
-(*The examples have been tested with an RealSense D430.*)
+(*The examples have been tested with a RealSense D430.*)
 
 ### Camera
 
