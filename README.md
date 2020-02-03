@@ -109,7 +109,8 @@ void draw()
   // show images
   image(camera.getColorImage(), 0, 0);
   image(camera.getIRImage(), 640, 0);
-}```
+}
+```
 
 #### Infrared
 It is important to notice that the **D415** and **D430** cameras both support multiple infrared streams. To read both of them it is possible to tell the camera, which one to enable and to get. 
@@ -156,10 +157,10 @@ void draw()
 }
 ```
 
-### Measure Depth
-It is possible to measure depth on a depth frame by using `getDistance(int x, int y)`. This will return you a float which represents the distance from the camera to the selected pixel in *meters*.
+### Measure Distance
+It is possible to measure distance on a depth frame by using `getDistance(int x, int y)`. This will return you a float which represents the distance from the camera to the selected pixel in *meters*.
 
-```
+```processing
 void draw {
 	...
 	float distance = camera.getDistance(mouseX, mouseY)
@@ -169,9 +170,20 @@ void draw {
 It is important to notice that usually depth and color streams are not aligned, which makes it impossible to measure depth on a color image. For this problem you will have to [align](#Alignment) the two streams.
 
 ### Depth Data
-To work with the raw depth data it is possible to enable the depth stream without the colorizer filter and start reading the depth data by using ``. 
+To work with the raw depth data it is possible to enable the depth stream without the colorizer filter and start reading the depth data by using `getDepthData()`. This returns a 2-dimensional array of `short` with the `Y / X` order.
+
+```processing
+short[][] data = camera.getDepthData();
+
+for (int y = 0; y < height; y++) {
+	for (int x = 0; x < width; x++) {
+		int intensity = data[y][x];
+	}
+}  
+``` 
 
 ### Alignment
+
 
 ### Filters
 
