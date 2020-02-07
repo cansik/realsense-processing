@@ -27,9 +27,9 @@ void draw()
   camera.readFrames();
 
   // show color images
-  tint(255, 255);
+  blendMode(BLEND);
   image(camera.getColorImage(), 0, 0);
 
-  tint(255, 100);
+  blendMode(MULTIPLY);
   image(camera.getDepthImage(), 0, 0);
 }
