@@ -1,7 +1,7 @@
 # Intel RealSense for Processing [![Build Status](https://travis-ci.org/cansik/realsense-processing.svg?branch=master)](https://travis-ci.org/cansik/realsense-processing) [![Build status](https://ci.appveyor.com/api/projects/status/nqmgr5d1pfcmco7u?svg=true)](https://ci.appveyor.com/project/cansik/realsense-processing) [![codebeat badge](https://codebeat.co/badges/9169f571-c486-4b1e-a34c-595e67cd9d93)](https://codebeat.co/projects/github-com-cansik-realsense-processing-master)
 Intel RealSense 2 support for the [Processing](https://processing.org/) framework.
 
-![Example](readme/example.jpg)
+![Example](readme/rs-examples.jpg)
 
 ## Introduction
 
@@ -12,6 +12,7 @@ Supported Intel RealSense Version: [2.29.0](https://github.com/IntelRealSense/li
 #### ![#f03c15](https://placehold.it/12/f03c15/000000?text=+) Important
 
 - If you were using **the old API** (PreReleases, dated Feb 2019) and do not want to update your sketch, download the [1.1.0 library](https://github.com/cansik/realsense-processing/releases/tag/1.1.0) from the releases and [install it manually](https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library#manual-install) into your processing library folder.
+- It is not recommended to kill a sketch in processing, without closing the camera.
 - Currently the library is still under development.
 - `Linux`, `MacOS` and `Windows` binaries (x86 / x64) are already bundled into the Jar file.
 
