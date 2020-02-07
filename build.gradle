@@ -22,11 +22,11 @@ javadoc {
 
 dependencies {
     // release
-    releaseJars 'com.github.cansik:librealsense-java:0.1'
+    releaseJars 'com.github.cansik:librealsense-java:0.2'
 
     // compile
     testCompile group: 'junit', name: 'junit', version: '4.11'
-    compile 'com.github.cansik:librealsense-java:0.1'
+    compile 'com.github.cansik:librealsense-java:0.2'
 
     // processing
     compile group: 'org.processing', name: 'core', version: '3.3.7'
