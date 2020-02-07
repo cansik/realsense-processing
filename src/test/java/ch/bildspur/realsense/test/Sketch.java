@@ -33,7 +33,7 @@ public class Sketch extends PApplet {
     public void setup() {
         frameRate(FRAME_RATE);
 
-        if(camera.isCameraAvailable()) {
+        if(camera.isDeviceAvailable()) {
             println("Camera found!");
         }
         else {

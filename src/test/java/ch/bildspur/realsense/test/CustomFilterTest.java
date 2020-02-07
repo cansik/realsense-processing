@@ -3,7 +3,6 @@ package ch.bildspur.realsense.test;
 
 import ch.bildspur.realsense.RealSenseCamera;
 import ch.bildspur.realsense.processing.RSFilterBlock;
-import ch.bildspur.realsense.processing.RSProcessingBlock;
 import ch.bildspur.realsense.type.ColorScheme;
 import org.intel.rs.processing.ThresholdFilter;
 import org.intel.rs.types.Option;
@@ -37,7 +36,7 @@ public class CustomFilterTest extends PApplet {
     public void setup() {
         frameRate(FRAME_RATE);
 
-        if(camera.isCameraAvailable()) {
+        if(camera.isDeviceAvailable()) {
             println("Camera found!");
         }
         else {

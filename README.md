@@ -73,10 +73,10 @@ RealSenseCamera camera = new RealSenseCamera(this);
 
 void setup() {
 	// check if a camera is available
-	boolean a = camera.isCameraAvailable();
+	boolean a = camera.isDeviceAvailable();
 	
 	// check how many cameras are available
-	int c = camera.getCameraCount();
+	int c = camera.getDeviceCount();
 }
 ```
 

@@ -14,7 +14,7 @@ void draw()
   textSize(20);
   textAlign(CENTER, CENTER);
 
-  if (camera.isCameraAvailable())
+  if (camera.isDeviceAvailable())
   {
     fill(100, 255, 100);
     text("camera available!", width / 2, height / 2);
