@@ -80,7 +80,7 @@ void setup() {
 }
 ```
 
-At the moment the library does not support starting one specific camera. But this feature is planned [#15](https://github.com/cansik/realsense-processing/issues/15).
+At the moment the library does not support starting one specific camera. But this feature is planned [#17](https://github.com/cansik/realsense-processing/issues/17).
 
 ### Streams
 
