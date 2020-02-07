@@ -2,10 +2,8 @@ package ch.bildspur.realsense.test;
 
 
 import ch.bildspur.realsense.RealSenseCamera;
-import ch.bildspur.realsense.type.IRStream;
 import org.intel.rs.device.Device;
 import processing.core.PApplet;
-import processing.opengl.PJOGL;
 
 /**
  * Created by cansik on 21.03.17.
@@ -24,7 +22,7 @@ public class GetDevicesTest extends PApplet {
     }
 
     public void setup() {
-        if(camera.isCameraAvailable()) {
+        if(camera.isDeviceAvailable()) {
             println("Camera found!");
         }
         else {
@@ -35,14 +33,14 @@ public class GetDevicesTest extends PApplet {
         // list all serial numbers
         Device[] devices = camera.getDevices();
 
-        println("Cameras: " + camera.getCameraCount());
+        println("Cameras: " + camera.getDeviceCount());
 
         for(Device d : devices) {
             println(d.getSerialNumber());
             d.close();
         }
 
-        println("Cameras: " + camera.getCameraCount());
+        println("Cameras: " + camera.getDeviceCount());
 
         camera.enableColorStream();
 

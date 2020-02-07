@@ -348,8 +348,8 @@ public class RealSenseCamera implements PConstants {
      *
      * @return True if device is available.
      */
-    public boolean isCameraAvailable() {
-        return getCameraCount() > 0;
+    public boolean isDeviceAvailable() {
+        return getDeviceCount() > 0;
     }
 
     /**
@@ -357,7 +357,7 @@ public class RealSenseCamera implements PConstants {
      *
      * @return Returns how many devices are connected.
      */
-    public int getCameraCount() {
+    public int getDeviceCount() {
         DeviceList deviceList = this.context.queryDevices();
         int count = deviceList.count();
         deviceList.release();
