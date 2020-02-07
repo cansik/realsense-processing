@@ -7,6 +7,7 @@ import ch.bildspur.realsense.stream.RSStream;
 import ch.bildspur.realsense.stream.VideoRSStream;
 import ch.bildspur.realsense.type.*;
 import org.intel.rs.Context;
+import org.intel.rs.device.AdvancedDevice;
 import org.intel.rs.device.Device;
 import org.intel.rs.device.DeviceList;
 import org.intel.rs.frame.DepthFrame;
@@ -364,6 +365,45 @@ public class RealSenseCamera implements PConstants {
     }
 
     /**
+     * Returns the first device of the device list.
+     * The device has to be closed by the user or used afterwards.
+     * @return First device of the device list.
+     */
+    public Device getDevice() {
+        DeviceList deviceList = this.context.queryDevices();
+        Device first = deviceList.get(0);
+        deviceList.release();
+        return first;
+    }
+
+    /**
+     * Returns the first advanced device of the device list.
+     * The device has to be closed by the user or used afterwards.
+     * @return First advanced device of the device list.
+     */
+    public AdvancedDevice getAdvancedDevice() {
+        Device device = getDevice();
+        return AdvancedDevice.fromDevice(device);
+    }
+
+    /**
+     * Returns a list of created devices.
+     * All the devices are created, so it is mandatory to close the devices again to be reused by the library.
+     * @return List of created devices.
+     */
+    public Device[] getDevices() {
+        DeviceList deviceList = this.context.queryDevices();
+        int count = deviceList.count();
+
+        Device[] devices = new Device[count];
+        for(int i = 0; i < devices.length; i++)
+            devices[i] = deviceList.get(i);
+
+        deviceList.release();
+        return devices;
+    }
+
+    /**
      * Starts the first camera.
      */
     public synchronized void start() {
@@ -387,11 +427,20 @@ public class RealSenseCamera implements PConstants {
      * @param device Camera device to start.
      */
     public synchronized void start(Device device) {
+        start(device.getSerialNumber());
+    }
+
+    /**
+     * Starts the camera.
+     *
+     * @param serialNumber Camera device serial number.
+     */
+    public synchronized void start(String serialNumber) {
         if (running)
             return;
 
         // set device
-        config.enableDevice(device.getSerialNumber());
+        config.enableDevice(serialNumber);
 
         // start pipeline
         pipelineProfile = pipeline.start(config);
