@@ -217,6 +217,21 @@ camera.addUnitsTransform();
 camera.addZeroOrderInvalidationFilter();
 ``` 
 
+### Configuration
+It is possible to load a predefined `JSON` file which contains a custom configuration. These configurations can be created in the RealSense Viewer app provided by Intel. To apply a `JSON` configuration, the camera has to be running alreay:
+
+```java
+// load json config from file
+String jsonConfig = String.join("\n", loadStrings("RawStereoConfig.json"));
+
+// enable an example stream and start camera
+camera.enableColorStream();
+camera.start();
+
+// load a json cofiguration as a string
+camera.setJsonConfiguration(jsonConfig);
+```
+
 ### Advanced
 For more advanced topics, the wrapper allows you to use the underlaying Java API through following getter methods.
 

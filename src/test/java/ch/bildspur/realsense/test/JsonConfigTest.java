@@ -45,18 +45,14 @@ public class JsonConfigTest extends PApplet {
         // read configuration
         String jsonConfig = String.join("\n", loadStrings("RawStereoConfig.json")).trim();
 
-        // get device
-        AdvancedDevice device = camera.getAdvancedDevice();
-        device.setAdvancedModeEnabled(true);
-        device.setJsonConfiguration(jsonConfig);
-
         camera.enableDepthStream();
         camera.enableColorStream();
 
         camera.enableAlign();
         camera.enableColorizer(ColorScheme.Cold);
 
-        camera.start(device);
+        camera.start();
+        camera.setJsonConfiguration(jsonConfig);
     }
 
     public void draw() {
