@@ -341,6 +341,15 @@ public class RealSenseCamera implements PConstants {
         return null;
     }
 
+    private void checkRunning() {
+        if(running)
+            return;
+
+        RuntimeException ex = new RuntimeException("Camera is not running.");
+        System.err.println(ex.getMessage());
+        throw ex;
+    }
+
     // Camera control
 
     /**
@@ -507,6 +516,8 @@ public class RealSenseCamera implements PConstants {
      * @return Distance value.
      */
     public float getDistance(int x, int y) {
+        checkRunning();
+
         if (frames == null)
             return -2;
 
@@ -525,6 +536,8 @@ public class RealSenseCamera implements PConstants {
      * @return Y / X short array of the raw depth buffer.
      */
     public short[][] getDepthData() {
+        checkRunning();
+
         DepthFrame frame = frames.getDepthFrame();
         depthStream.updateDepthData(frame);
         frame.release();
@@ -546,6 +559,20 @@ public class RealSenseCamera implements PConstants {
     public PImage getIRImage(IRStream irStream) {
         VideoRSStream stream = irStream == IRStream.First ? firstIRStream : secondIRStream;
         return stream.getImage();
+    }
+
+    public void setJsonConfiguration(String config) {
+        checkRunning();
+
+        AdvancedDevice ad = AdvancedDevice.fromDevice(pipelineProfile.getDevice());
+        ad.setJsonConfiguration(config);
+    }
+
+    public String getJsonConfiguration() {
+        checkRunning();
+
+        AdvancedDevice ad = AdvancedDevice.fromDevice(pipelineProfile.getDevice());
+        return ad.getJsonConfiguration();
     }
 
     // Methods to keep old API valid (will be removed soon!)
