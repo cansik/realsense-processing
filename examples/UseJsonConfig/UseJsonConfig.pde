@@ -12,22 +12,18 @@ void setup()
   // load json config from file
   String jsonConfig = String.join("\n", loadStrings("RawStereoConfig.json"));
 
-  // get first device and load configuration
-  AdvancedDevice device = camera.getAdvancedDevice();
-  device.setAdvancedModeEnabled(true);
-  device.setJsonConfiguration(jsonConfig);
-
   // enable color & depth stream
   camera.enableColorStream();
   camera.enableDepthStream();
 
   // add colorizer
-  camera.enableColorizer(ColorScheme.Bio);
+  camera.enableColorizer(ColorScheme.Warm);
 
   // align the streams
   camera.enableAlign();
 
-  camera.start(device);
+  camera.start();
+  camera.setJsonConfiguration(jsonConfig);
 }
 
 void draw()
@@ -38,9 +34,9 @@ void draw()
   camera.readFrames();
 
   // show color images
-  tint(255, 255);
+  blendMode(BLEND);
   image(camera.getColorImage(), 0, 0);
 
-  tint(255, 100);
+  blendMode(MULTIPLY);
   image(camera.getDepthImage(), 0, 0);
 }
