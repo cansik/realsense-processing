@@ -374,28 +374,6 @@ public class RealSenseCamera implements PConstants {
     }
 
     /**
-     * Returns the first device of the device list.
-     * The device has to be closed by the user or used afterwards.
-     * @return First device of the device list.
-     */
-    public Device getDevice() {
-        DeviceList deviceList = this.context.queryDevices();
-        Device first = deviceList.get(0);
-        deviceList.release();
-        return first;
-    }
-
-    /**
-     * Returns the first advanced device of the device list.
-     * The device has to be closed by the user or used afterwards.
-     * @return First advanced device of the device list.
-     */
-    public AdvancedDevice getAdvancedDevice() {
-        Device device = getDevice();
-        return AdvancedDevice.fromDevice(device);
-    }
-
-    /**
      * Returns a list of created devices.
      * All the devices are created, so it is mandatory to close the devices again to be reused by the library.
      * @return List of created devices.
@@ -410,6 +388,25 @@ public class RealSenseCamera implements PConstants {
 
         deviceList.release();
         return devices;
+    }
+
+    /**
+     * Returns device used by pipeline.
+     * @return Returns device used by pipeline.
+     */
+    public Device getDevice() {
+        checkRunning();
+        return pipelineProfile.getDevice();
+    }
+
+    /**
+     * Returns advanced device used by pipeline.
+     * @return Returns advanced device used by pipeline.
+     */
+    public AdvancedDevice getAdvancedDevice() {
+        Device device = getDevice();
+        // todo: check if device is advanced device?
+        return AdvancedDevice.fromDevice(device);
     }
 
     /**
@@ -564,14 +561,14 @@ public class RealSenseCamera implements PConstants {
     public void setJsonConfiguration(String config) {
         checkRunning();
 
-        AdvancedDevice ad = AdvancedDevice.fromDevice(pipelineProfile.getDevice());
+        AdvancedDevice ad = getAdvancedDevice();
         ad.setJsonConfiguration(config);
     }
 
     public String getJsonConfiguration() {
         checkRunning();
 
-        AdvancedDevice ad = AdvancedDevice.fromDevice(pipelineProfile.getDevice());
+        AdvancedDevice ad = getAdvancedDevice();
         return ad.getJsonConfiguration();
     }
 
