@@ -73,11 +73,11 @@ import ch.bildspur.realsense.*;
 RealSenseCamera camera = new RealSenseCamera(this);
 
 void setup() {
-	// check if a camera is available
-	boolean a = camera.isDeviceAvailable();
-	
-	// check how many cameras are available
-	int c = camera.getDeviceCount();
+    // check if a camera is available
+    boolean a = camera.isDeviceAvailable();
+    
+    // check how many cameras are available
+    int c = camera.getDeviceCount();
 }
 ```
 
@@ -94,23 +94,23 @@ This example activates color and infrared streams and reads their frame data. Th
 ```processing
 void setup()
 {
-  size(1280, 480);
-  
-  camera.enableColorStream(640, 480, 30);
-  camera.enableIRStream(640, 480, 30);
-  camera.start();
+    size(1280, 480);
+    
+    camera.enableColorStream(640, 480, 30);
+    camera.enableIRStream(640, 480, 30);
+    camera.start();
 }
 
 void draw()
 {
-  background(0);
-  
-  // read frames
-  camera.readFrames();
-  
-  // show images
-  image(camera.getColorImage(), 0, 0);
-  image(camera.getIRImage(), 640, 0);
+    background(0);
+    
+    // read frames
+    camera.readFrames();
+    
+    // show images
+    image(camera.getColorImage(), 0, 0);
+    image(camera.getIRImage(), 640, 0);
 }
 ```
 
@@ -122,13 +122,13 @@ It is important to notice that the **D415** and **D430** cameras both support mu
 import ch.bildspur.realsense.type.*;
 
 void setup() {
-	//...
-	camera.enableIRStream(640, 480, 30, IRStream.Second);
+    //...
+    camera.enableIRStream(640, 480, 30, IRStream.Second);
 }
 
 void draw() {
-	//...
-	image(camera.getIRImage(IRStream.Second), 0, 0);
+    //...
+    image(camera.getIRImage(IRStream.Second), 0, 0);
 }
 ```
 
@@ -143,20 +143,20 @@ RealSenseCamera camera = new RealSenseCamera(this);
 
 void setup()
 {
-  size(640, 480);
-  
-  camera.enableDepthStream(640, 480);
-  camera.enableColorizer(ColorScheme.Cold);
-  
-  camera.start();
+    size(640, 480);
+    
+    camera.enableDepthStream(640, 480);
+    camera.enableColorizer(ColorScheme.Cold);
+    
+    camera.start();
 }
 
 void draw()
 {
-  background(0);
-  
-  camera.readFrames();
-  image(camera.getDepthImage(), 0, 0);
+    background(0);
+    
+    camera.readFrames();
+    image(camera.getDepthImage(), 0, 0);
 }
 ```
 
@@ -165,8 +165,8 @@ It is possible to measure distance on a depth frame by using `getDistance(int x,
 
 ```processing
 void draw {
-	//...
-	float distance = camera.getDistance(mouseX, mouseY)
+    //...
+    float distance = camera.getDistance(mouseX, mouseY)
 }
 ```
 
@@ -179,9 +179,9 @@ To work with the raw depth data it is possible to enable the depth stream withou
 short[][] data = camera.getDepthData();
 
 for (int y = 0; y < height; y++) {
-	for (int x = 0; x < width; x++) {
-		int intensity = data[y][x];
-	}
+    for (int x = 0; x < width; x++) {
+        int intensity = data[y][x];
+    }
 }  
 ``` 
 
@@ -217,10 +217,10 @@ camera.addUnitsTransform();
 camera.addZeroOrderInvalidationFilter();
 ``` 
 
-### Configuration
+### Configuration
 It is possible to load a predefined `JSON` file which contains a custom configuration. These configurations can be created in the RealSense Viewer app provided by Intel. To apply a `JSON` configuration, the camera has to be running alreay:
 
-```java
+```processing
 // load json config from file
 String jsonConfig = String.join("\n", loadStrings("RawStereoConfig.json"));
 
