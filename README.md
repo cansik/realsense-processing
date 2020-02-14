@@ -18,7 +18,7 @@ Supported Intel RealSense Version: [2.29.0](https://github.com/IntelRealSense/li
 
 
 #### Supported Configurations
-Here are some configurations I have tested and which are working with the Intel RealSense D435. Please make sure you are using a USB 3.0 or 3.1 cable!
+Here are some configurations I have tested and which are working with the Intel RealSense D435. Please make sure you are using a **USB 3.0 or 3.1** cable!
 
 | width | height | fps                         | depth stream | color stream |
 |-------|--------|-----------------------------|--------------|--------------|
@@ -247,6 +247,21 @@ FrameList frames = camera.getFrames();
 Also check out the following example, which uses this API getters to display a pointcloud.
 
 - [Pointcloud Example](https://github.com/cansik/realsense-processing/blob/master/examples/PointCloudViewer/PointCloudViewer.pde) (Advanced API)
+
+## FAQ
+We try to gather the most frequent questions and answer them here, so we do not have to answer them in every issue.
+
+> The method start(Device) in the type RealSenseCamera is not applicable for the arguments (int, int, int, boolean, boolean)
+
+You are still using the deprecated API. Please update your code to the 2.0 API structure or install the deprecated API as described in the section [Important](Important).
+
+> The image from the RealSense looks distorted and glitchy.
+
+When shutting down the camera without using the `stop()` method, the camera can fall into a bricked state. Just plug out the camera and plug it back in to reset it.
+
+> The camera directly starts with an error that the device could not have been opened.
+
+Either the camera is already used in another application (RealSense-Viewer?) or it is in a bricked state. Just plug out the camera and plug it back in to reset it.
 
 ## About
 
