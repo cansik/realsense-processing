@@ -599,4 +599,8 @@ public class RealSenseCamera implements PConstants {
     public boolean isRunning() {
         return running;
     }
+
+    public RSProcessingBlock<Colorizer> getColorizer() {
+        return colorizer;
+    }
 }

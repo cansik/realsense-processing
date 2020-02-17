@@ -3,6 +3,7 @@ package ch.bildspur.realsense.test;
 
 import ch.bildspur.realsense.RealSenseCamera;
 import ch.bildspur.realsense.type.ColorScheme;
+import org.intel.rs.types.Option;
 import processing.core.PApplet;
 import processing.opengl.PJOGL;
 
@@ -64,5 +65,10 @@ public class ColorizerTest extends PApplet {
         text("Depth Stream", 20, VIEW_HEIGHT  + 8);
         text("Color Stream", VIEW_WIDTH + 20, VIEW_HEIGHT  + 8);
         surface.setTitle("RealSense Processing - FPS: " + Math.round(frameRate));
+    }
+
+    @Override
+    public void keyPressed() {
+        camera.getColorizer().setOption(Option.HistogramEqualizationEnabled, 0f);
     }
 }
