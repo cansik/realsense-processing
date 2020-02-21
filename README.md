@@ -213,6 +213,8 @@ camera.addDecimationFilter(2);
 camera.addDisparityTransform(true);
 camera.addHoleFillingFilter(HoleFillingType.FarestFromAround);
 camera.addTemporalFilter(0.4f, 20, PersistencyIndex.ValidIn2_Last4);
+
+// The following filters have not been tested yet:
 camera.addUnitsTransform();
 camera.addZeroOrderInvalidationFilter();
 ``` 
