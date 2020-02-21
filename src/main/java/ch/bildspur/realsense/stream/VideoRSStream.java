@@ -27,6 +27,12 @@ public class VideoRSStream extends RSStream {
     }
 
     public void copyPixels(VideoFrame frame) {
+
+        // check if image has been changed by filters
+        if(frame.getWidth() != image.width || frame.getHeight() != image.height) {
+            image = new PImage(frame.getWidth(), frame.getHeight(), PConstants.RGB);
+        }
+
         switch (frame.getProfile().getFormat()) {
             case Rgb8:
                 copyRGB8(frame);
