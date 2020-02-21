@@ -238,7 +238,7 @@ public class RealSenseCamera implements PConstants {
 
         temporalFilter.setOption(Option.FilterSmoothAlpha, smoothAlpha);
         temporalFilter.setOption(Option.FilterSmoothDelta, smoothDelta);
-        temporalFilter.setOption(Option.FilterOption, persistencyIndex.getIndex());
+        temporalFilter.setOption(Option.HolesFill, persistencyIndex.getIndex());
     }
 
     public void addUnitsTransform() {
