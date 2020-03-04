@@ -81,7 +81,7 @@ void setup() {
 }
 ```
 
-At the moment the library does not support starting one specific camera. But this feature is planned [#17](https://github.com/cansik/realsense-processing/issues/17).
+To start a specific camera device (or multiple of them), check out the [Multi Camera Color Stream example](https://github.com/cansik/realsense-processing/blob/master/examples/MultiCameraColorStream/MultiCameraColorStream.pde).
 
 ### Streams
 
