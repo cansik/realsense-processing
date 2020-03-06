@@ -81,7 +81,7 @@ void setup() {
 }
 ```
 
-To start a specific camera device (or multiple of them), check out the [Multi Camera Color Stream example](https://github.com/cansik/realsense-processing/blob/master/examples/MultiCameraColorStream/MultiCameraColorStream.pde).
+To start a specific camera device (or multiple of them), check out the [Multi Camera Color Stream example](https://github.com/cansik/realsense-processing/blob/master/examples/MultiCameraColorStream/MultiCameraColorStream.pde). To control an undefined amount of cameras, check out the [Advanced Device Handling example](https://github.com/cansik/realsense-processing/blob/master/examples/AdvancedDeviceHandling/AdvancedDeviceHandling.pde).
 
 ### Streams
 
