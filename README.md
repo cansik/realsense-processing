@@ -217,10 +217,22 @@ camera.addTemporalFilter(0.4f, 20, PersistencyIndex.ValidIn2_Last4);
 // The following filters have not been tested yet:
 camera.addUnitsTransform();
 camera.addZeroOrderInvalidationFilter();
-``` 
+```
+
+### Sensor Options
+A RealSense camera usually contains multiple sensors, each with it's unique options and settings. Currently supported are only the `Depth` and `RGB` sensor. Here is an example on how to set the `Enable Auto Exposure` option on the RGB sensor.
+
+```processing
+import org.intel.rs.types.Option;
+
+camera.start();
+camera.getRGBSensor().setOption(Option.EnableAutoExposure, 1.0f);
+```
+
+RealSense options are always of type **float**, ranging from `min` to `max` and do have a `default` value. Please be aware, that setting sensor options is **only possible** after the camera has been started!
 
 ### Configuration
-It is possible to load a predefined `JSON` file which contains a custom configuration. These configurations can be created in the RealSense Viewer app provided by Intel. To apply a `JSON` configuration, the camera has to be running alreay:
+It is possible to load a predefined `JSON` file which contains a custom configuration. These configurations can be created in the RealSense Viewer app provided by Intel. To apply a `JSON` configuration, the camera has to be running already:
 
 ```processing
 // load json config from file
