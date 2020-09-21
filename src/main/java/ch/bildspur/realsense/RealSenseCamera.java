@@ -2,6 +2,7 @@ package ch.bildspur.realsense;
 
 import ch.bildspur.realsense.processing.RSFilterBlock;
 import ch.bildspur.realsense.processing.RSProcessingBlock;
+import ch.bildspur.realsense.sensor.RSSensor;
 import ch.bildspur.realsense.stream.DepthRSStream;
 import ch.bildspur.realsense.stream.RSStream;
 import ch.bildspur.realsense.stream.VideoRSStream;
@@ -18,6 +19,9 @@ import org.intel.rs.pipeline.Config;
 import org.intel.rs.pipeline.Pipeline;
 import org.intel.rs.pipeline.PipelineProfile;
 import org.intel.rs.processing.*;
+import org.intel.rs.sensor.Sensor;
+import org.intel.rs.sensor.SensorList;
+import org.intel.rs.types.Extension;
 import org.intel.rs.types.Format;
 import org.intel.rs.types.Option;
 import org.intel.rs.types.Stream;
@@ -34,11 +38,13 @@ public class RealSenseCamera implements PConstants {
     private final int defaultStreamIndex = 0;
     private final int defaultFrameRate = 30;
 
+    // static
+    private static Context context = new Context();
+
     // processing
     private PApplet parent;
 
     // realsense
-    private Context context = new Context();
     private Config config = new Config();
     private Pipeline pipeline = new Pipeline(context);
     private PipelineProfile pipelineProfile;
@@ -357,7 +363,7 @@ public class RealSenseCamera implements PConstants {
      *
      * @return True if device is available.
      */
-    public boolean isDeviceAvailable() {
+    public static boolean isDeviceAvailable() {
         return getDeviceCount() > 0;
     }
 
@@ -366,8 +372,8 @@ public class RealSenseCamera implements PConstants {
      *
      * @return Returns how many devices are connected.
      */
-    public int getDeviceCount() {
-        DeviceList deviceList = this.context.queryDevices();
+    public static int getDeviceCount() {
+        DeviceList deviceList = context.queryDevices();
         int count = deviceList.count();
         deviceList.release();
         return count;
@@ -378,8 +384,8 @@ public class RealSenseCamera implements PConstants {
      * All the devices are created, so it is mandatory to close the devices again to be reused by the library.
      * @return List of created devices.
      */
-    public Device[] getDevices() {
-        DeviceList deviceList = this.context.queryDevices();
+    public static Device[] getDevices() {
+        DeviceList deviceList = context.queryDevices();
         int count = deviceList.count();
 
         Device[] devices = new Device[count];
@@ -416,7 +422,7 @@ public class RealSenseCamera implements PConstants {
         if (running)
             return;
 
-        DeviceList deviceList = this.context.queryDevices();
+        DeviceList deviceList = context.queryDevices();
 
         if (deviceList.count() == 0) {
             PApplet.println("RealSense: No device found!");
@@ -572,7 +578,43 @@ public class RealSenseCamera implements PConstants {
         return ad.getJsonConfiguration();
     }
 
-    // Methods to keep old API valid (will be removed soon!)
+    // Sensors
+    public RSSensor getSensor(int index) {
+        SensorList sensors = getDevice().querySensors();
+        Sensor sensor = sensors.get(index);
+        sensors.release();
+        return new RSSensor(sensor);
+    }
+
+    public RSSensor getDepthSensor() {
+        SensorList sensors = getDevice().querySensors();
+        Sensor sensor = null;
+
+        for(Sensor s : sensors) {
+            if(s.isExtendableTo(Extension.DepthSensor)) {
+                sensor = s;
+                break;
+            }
+        }
+
+        sensors.release();
+        return new RSSensor(sensor);
+    }
+
+    public RSSensor getRGBSensor() {
+        SensorList sensors = getDevice().querySensors();
+        Sensor sensor = null;
+
+        for(Sensor s : sensors) {
+            if(s.getStreamProfiles().get(0).getStream() == Stream.Color) {
+                sensor = s;
+                break;
+            }
+        }
+
+        sensors.release();
+        return new RSSensor(sensor);
+    }
 
     // Other Getters
 

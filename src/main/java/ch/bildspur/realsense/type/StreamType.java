@@ -5,8 +5,7 @@ import org.intel.rs.types.Stream;
 public enum  StreamType {
     Color(Stream.Color),
     Depth(Stream.Depth),
-    Infrared(Stream.Infrared)
-    ;
+    Infrared(Stream.Infrared);
 
     private Stream stream;
 
