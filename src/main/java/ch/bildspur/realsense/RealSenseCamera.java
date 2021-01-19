@@ -4,6 +4,7 @@ import ch.bildspur.realsense.processing.RSFilterBlock;
 import ch.bildspur.realsense.processing.RSProcessingBlock;
 import ch.bildspur.realsense.sensor.RSSensor;
 import ch.bildspur.realsense.stream.DepthRSStream;
+import ch.bildspur.realsense.stream.PoseRSStream;
 import ch.bildspur.realsense.stream.RSStream;
 import ch.bildspur.realsense.stream.VideoRSStream;
 import ch.bildspur.realsense.type.*;
@@ -11,20 +12,14 @@ import org.intel.rs.Context;
 import org.intel.rs.device.AdvancedDevice;
 import org.intel.rs.device.Device;
 import org.intel.rs.device.DeviceList;
-import org.intel.rs.frame.DepthFrame;
-import org.intel.rs.frame.Frame;
-import org.intel.rs.frame.FrameList;
-import org.intel.rs.frame.VideoFrame;
+import org.intel.rs.frame.*;
 import org.intel.rs.pipeline.Config;
 import org.intel.rs.pipeline.Pipeline;
 import org.intel.rs.pipeline.PipelineProfile;
 import org.intel.rs.processing.*;
 import org.intel.rs.sensor.Sensor;
 import org.intel.rs.sensor.SensorList;
-import org.intel.rs.types.Extension;
-import org.intel.rs.types.Format;
-import org.intel.rs.types.Option;
-import org.intel.rs.types.Stream;
+import org.intel.rs.types.*;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
@@ -54,6 +49,7 @@ public class RealSenseCamera implements PConstants {
     private DepthRSStream depthStream = new DepthRSStream();
     private VideoRSStream firstIRStream = new VideoRSStream();
     private VideoRSStream secondIRStream = new VideoRSStream();
+    private PoseRSStream poseStream = new PoseRSStream();
 
     // processors
     // todo: add syncer and pointcloud
@@ -163,6 +159,15 @@ public class RealSenseCamera implements PConstants {
 
         stream.init(Stream.Infrared, streamIndex, width, height, Format.Y8, fps);
         enableStream(stream);
+    }
+
+    /**
+     * Enable a new pose stream with default configuration.
+     */
+    public void enablePoseStream() {
+        // this does not work like the video streams (only uses type and format)
+        poseStream.init(Stream.Pose, Format.SixDOF);
+        config.enableStream(Stream.Pose, Format.SixDOF);
     }
 
     // Processors
@@ -331,6 +336,12 @@ public class RealSenseCamera implements PConstants {
         if (secondIRStream.isEnabled()) {
             VideoFrame frame = getStreamByIndex(frames, Stream.Infrared, Format.Any, secondIRStream.getIndex());
             secondIRStream.copyPixels(frame);
+            frame.release();
+        }
+
+        if(poseStream.isEnabled()) {
+            PoseFrame frame = frames.getPoseFrame();
+
             frame.release();
         }
     }
@@ -566,6 +577,10 @@ public class RealSenseCamera implements PConstants {
     public PImage getIRImage(IRStream irStream) {
         VideoRSStream stream = irStream == IRStream.First ? firstIRStream : secondIRStream;
         return stream.getImage();
+    }
+
+    public Pose getPose() {
+        return poseStream.getPose();
     }
 
     public void setJsonConfiguration(String config) {

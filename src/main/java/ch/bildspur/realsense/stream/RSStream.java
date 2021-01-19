@@ -13,6 +13,12 @@ public class RSStream {
     private Format format;
     private int fps;
 
+    public void init(Stream streamType, Format format) {
+        this.streamType = streamType;
+        this.format = format;
+        enabled = true;
+    }
+
     public void init(Stream streamType, int index, int width, int height, Format format, int fps) {
         this.streamType = streamType;
         this.index = index;
