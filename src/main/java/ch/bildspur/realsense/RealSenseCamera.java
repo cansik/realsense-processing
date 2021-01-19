@@ -513,6 +513,7 @@ public class RealSenseCamera implements PConstants {
      * Returns depth at specific position in the depth frame.
      * Returns -1 if no depth frame was captured.
      * Returns -2 if no frames were captured at all.
+     * Returns -3 if image coordinates are out of range.
      *
      * @param x X coordinate.
      * @param y Y coordinate.
@@ -528,6 +529,9 @@ public class RealSenseCamera implements PConstants {
 
         if (depth == null)
             return -1;
+
+        if(x < 0 || x >= depth.getWidth() || y < 0 || y > depth.getHeight())
+            return -3;
 
         float distance = depth.getDistance(x, y);
         depth.release();
