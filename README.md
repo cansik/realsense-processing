@@ -5,16 +5,16 @@ Intel RealSense 2 support for the [Processing](https://processing.org/) framewor
 
 ## Introduction
 
-**Intel RealSense for Procesing** is a port of the **[Intel RealSense](https://github.com/IntelRealSense/librealsense)** library for processing. With this library it is possible to use the Intel RealSense D400 camera series within processing. The idea is **not** to expose the full API into Processing, however a simple and convenient way to work with RealSense devices. For full API support switching over to the underlying [java wrapper](https://github.com/cansik/librealsense-java) is recommended.
+**Intel RealSense for Procesing** is a port of the **[Intel RealSense](https://github.com/IntelRealSense/librealsense)** library for processing. With this library it is possible to use the Intel RealSense T200 / D400 / D500 camera series within processing. The idea is **not** to expose the full API into Processing, however a simple and convenient way to work with RealSense devices. For full API support switching over to the underlying [java wrapper](https://github.com/cansik/librealsense-java) is recommended.
 
-Supported Intel RealSense Version: [2.29.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.29.0)
+Supported Intel RealSense Version: [2.40.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.40.0)
 
 #### ![#f03c15](https://placehold.it/12/f03c15/000000?text=+) Important
 
 - If you were using **the old API** (PreReleases, dated Feb 2019) and do not want to update your sketch, download the [1.1.0 library](https://github.com/cansik/realsense-processing/releases/tag/1.1.0) from the releases and [install it manually](https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library#manual-install) into your processing library folder.
 - It is not recommended to kill a sketch in processing, without closing the camera.
 - Currently the library is still under development.
-- `Linux`, `MacOS` and `Windows` binaries (x86 / x64) are already bundled into the Jar file.
+- `Linux` (x86 / x64 / armhf / arm64), `MacOS` (x64) and `Windows` (x86 / x64) binaries are already bundled into the jar file.
 
 
 #### Supported Configurations

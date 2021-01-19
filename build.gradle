@@ -1,11 +1,11 @@
 group 'ch.bildspur'
-version '2.2.0'
+version '2.3.0'
 
 apply plugin: 'java'
 
 sourceCompatibility = 1.8
 
-def rsVersion = '0.2.1'
+def rsVersion = '2.40.0-0.3.0'
 
 repositories {
     mavenCentral()
