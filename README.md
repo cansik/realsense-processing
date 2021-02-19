@@ -277,6 +277,18 @@ When shutting down the camera without using the `stop()` method, the camera can 
 
 Either the camera is already used in another application (RealSense-Viewer?) or it is in a bricked state. Just plug out the camera and plug it back in to reset it.
 
+## Build
+
+To build the library yourself just use the predefined gradle command. The zipped processing library will be in the `release` folder.
+
+```bash
+# windows
+gradlew.bat releaseProcessingLib
+
+# mac / unix
+./gradlew releaseProcessingLib
+```
+
 ## About
 
 The processing library is maintained by [cansik](https://github.com/cansik) and based on the Intel RealSense [Java wrapper](https://github.com/cansik/librealsense-java).
