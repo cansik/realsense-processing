@@ -17,7 +17,9 @@ repositories {
 
 configurations {
     jar.archiveName = "${outputName}.jar"
-    releaseJars
+
+    processing
+    implementation.extendsFrom processing
 }
 
 javadoc {
@@ -27,26 +29,25 @@ javadoc {
 
 dependencies {
     // release
-    releaseJars "com.github.cansik:librealsense-java:$rsVersion"
+    compile "com.github.cansik:librealsense-java:$rsVersion"
 
     // compile
     testCompile group: 'junit', name: 'junit', version: '4.11'
-    compile "com.github.cansik:librealsense-java:$rsVersion"
 
     // processing
-    compile group: 'org.processing', name: 'core', version: '3.3.7'
-    compile group: 'org.jogamp.jogl', name: 'jogl-all-main', version: '2.3.2'
-    compile group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version: '2.3.2'
-}
-
-task copyToLib( type: Copy ) {
-    into "$buildDir/libs/lib"
-    from configurations.releaseJars
+    processing group: 'org.processing', name: 'core', version: '3.3.7'
+    processing group: 'org.jogamp.jogl', name: 'jogl-all-main', version: '2.3.2'
+    processing group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version: '2.3.2'
 }
 
 task fatJar(type: Jar) {
     archiveName = "$outputName-complete.jar"
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    dependsOn configurations.runtime
+    from {
+        (configurations.runtime - configurations.processing).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
     with jar
 }
 
