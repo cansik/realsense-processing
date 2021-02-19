@@ -37,7 +37,7 @@ public class RealSenseCamera implements PConstants {
     private static Context context = new Context();
 
     // processing
-    private PApplet parent;
+    private final PApplet parent;
 
     // realsense
     private Config config = new Config();
@@ -346,6 +346,7 @@ public class RealSenseCamera implements PConstants {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends Frame> T getStreamByIndex(FrameList frames, Stream stream, Format format, int index) {
         for (Frame frame : frames) {
             if (frame.getProfile().getStream() == stream

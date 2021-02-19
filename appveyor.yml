@@ -24,11 +24,12 @@ build:
   verbosity: detailed
 
 build_script:
+  # - mvn -U compile || true
   - gradlew.bat assemble
   - gradlew.bat build
   - gradlew.bat jar
   - gradlew.bat javadoc
-  - '%CYG_ROOT%/bin/bash -lc "cd \"$OLDPWD\" && ./release.sh nightly"'
+  - gradlew.bat releaseProcessingLib -PreleaseVersion=nightly
 
 test_script:
   - gradlew.bat check

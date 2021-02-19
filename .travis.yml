@@ -12,11 +12,12 @@ addons:
 
 # command to build
 install:
+  # - mvn -U compile > /dev/null || true
   - ./gradlew assemble
   - ./gradlew build
   - ./gradlew jar
   - ./gradlew javadoc
-  - './release.sh nightly'
+  - ./gradlew releaseProcessingLib -PreleaseVersion=nightly
 
 # command to run tests
 script:
