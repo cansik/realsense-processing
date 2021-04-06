@@ -50,7 +50,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.cansik:realsense-processing:latest'
+    implementation 'com.github.cansik:realsense-processing:2.3.0'
 }
 ```
 
