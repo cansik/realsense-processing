@@ -1,7 +1,9 @@
 package ch.bildspur.realsense;
 
+import ch.bildspur.realsense.processing.RSDecimationFilter;
 import ch.bildspur.realsense.processing.RSFilterBlock;
 import ch.bildspur.realsense.processing.RSProcessingBlock;
+import ch.bildspur.realsense.processing.RSThresholdFilter;
 import ch.bildspur.realsense.sensor.RSSensor;
 import ch.bildspur.realsense.stream.DepthRSStream;
 import ch.bildspur.realsense.stream.PoseRSStream;
@@ -57,12 +59,10 @@ public class RealSenseCamera implements PConstants {
     private RSProcessingBlock<Align> align = new RSProcessingBlock<>();
 
     // filter processors
-    private RSFilterBlock decimationFilter = new RSFilterBlock();
     private RSFilterBlock disparityTransform = new RSFilterBlock();
     private RSFilterBlock holeFillingFilter = new RSFilterBlock();
     private RSFilterBlock spatialFilter = new RSFilterBlock();
     private RSFilterBlock temporalFilter = new RSFilterBlock();
-    private RSFilterBlock thresholdFilter = new RSFilterBlock();
     private RSFilterBlock unitsTransform = new RSFilterBlock();
     private RSFilterBlock zeroOrderInvalidationFilter = new RSFilterBlock();
 
@@ -194,15 +194,16 @@ public class RealSenseCamera implements PConstants {
         filters.add(filter);
     }
 
-    public void addDecimationFilter() {
-        addDecimationFilter(2);
+    public RSDecimationFilter addDecimationFilter() {
+        return addDecimationFilter(2);
     }
 
-    public void addDecimationFilter(int filterMagnitude) {
-        decimationFilter.init(new DecimationFilter());
-        addFilter(decimationFilter);
+    public RSDecimationFilter addDecimationFilter(int filterMagnitude) {
+        RSDecimationFilter filter = new RSDecimationFilter();
+        addFilter(filter);
 
-        decimationFilter.setOption(Option.FilterMagnitude, filterMagnitude);
+        filter.setFilterMagnitude(filterMagnitude);
+        return filter;
     }
 
     public void addDisparityTransform() {
@@ -266,12 +267,14 @@ public class RealSenseCamera implements PConstants {
         // todo: are there no options available?
     }
 
-    public void addThresholdFilter(float minDistance, float maxDistance) {
-        thresholdFilter.init(new ThresholdFilter());
-        addFilter(thresholdFilter);
+    public RSThresholdFilter addThresholdFilter(float minDistance, float maxDistance) {
+        RSThresholdFilter filter = new RSThresholdFilter();
+        addFilter(filter);
 
-        thresholdFilter.setOption(Option.MinDistance, minDistance);
-        thresholdFilter.setOption(Option.MaxDistance, maxDistance);
+        filter.setMinDistance(minDistance);
+        filter.setMaxDistance(maxDistance);
+
+        return filter;
     }
 
     public void clearFilters() {
