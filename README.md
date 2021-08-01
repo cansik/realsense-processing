@@ -9,7 +9,7 @@ Intel RealSense 2 support for the [Processing](https://processing.org/) framewor
 
 Supported Intel RealSense Version: [2.40.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.40.0)
 
-#### ![#f03c15](https://placehold.it/12/f03c15/000000?text=+) Important
+#### Important ⚠️
 
 - If you were using **the old API** (PreReleases, dated Feb 2019) and do not want to update your sketch, download the [1.1.0 library](https://github.com/cansik/realsense-processing/releases/tag/1.1.0) from the releases and [install it manually](https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library#manual-install) into your processing library folder.
 - It is not recommended to kill a sketch in processing, without closing the camera.
