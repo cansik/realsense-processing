@@ -1,13 +1,10 @@
 import ch.bildspur.realsense.*;
 import ch.bildspur.realsense.type.*;
-
-import ch.bildspur.realsense.processing.RSFilterBlock;
-import org.intel.rs.processing.ThresholdFilter;
-import org.intel.rs.types.Option;
+import ch.bildspur.realsense.processing.*;
 
 RealSenseCamera camera = new RealSenseCamera(this);
 
-RSFilterBlock thresholdFilter = new RSFilterBlock();
+RSThresholdFilter thresholdFilter;
 
 float minDistance = 0.0f;
 float maxDistance = 4.0f;
@@ -26,8 +23,7 @@ void setup()
   camera.enableColorizer(ColorScheme.Warm);
 
   // add threshold filter
-  thresholdFilter.init(new ThresholdFilter());
-  camera.addFilter(thresholdFilter);
+  thresholdFilter = camera.addThresholdFilter();
 
   camera.start();
 }
@@ -40,11 +36,9 @@ void draw()
   float filterCenter = map(mouseX, 0, height, minDistance, maxDistance);
 
   if (filterOn) {
-    thresholdFilter.setOption(Option.MinDistance, 
-      constrain(filterCenter - (size * 0.5f), minDistance, maxDistance - size));
+    thresholdFilter.setMinDistance(constrain(filterCenter - (size * 0.5f), minDistance, maxDistance - size));
 
-    thresholdFilter.setOption(Option.MaxDistance, 
-      constrain(filterCenter + (size * 0.5f), minDistance + size, maxDistance));
+    thresholdFilter.setMaxDistance(constrain(filterCenter + (size * 0.5f), minDistance + size, maxDistance));
   }
   // read frames
   camera.readFrames();
@@ -54,8 +48,8 @@ void draw()
 }
 
 void keyPressed() {
-  thresholdFilter.setOption(Option.MinDistance, minDistance);
-  thresholdFilter.setOption(Option.MaxDistance, maxDistance);
+  thresholdFilter.setMinDistance(minDistance);
+  thresholdFilter.setMaxDistance(maxDistance);
 
   filterOn = !filterOn;
 }

@@ -274,7 +274,7 @@ public class RealSenseCamera implements PConstants {
     }
 
     public RSThresholdFilter addThresholdFilter() {
-        return addThresholdFilter(0.0f, 100.0f);
+        return addThresholdFilter(0.0f, 16.0f);
     }
 
     public RSThresholdFilter addThresholdFilter(float minDistance, float maxDistance) {
