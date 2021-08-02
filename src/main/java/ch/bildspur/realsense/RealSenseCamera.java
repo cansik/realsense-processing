@@ -1,9 +1,6 @@
 package ch.bildspur.realsense;
 
-import ch.bildspur.realsense.processing.RSDecimationFilter;
-import ch.bildspur.realsense.processing.RSFilterBlock;
-import ch.bildspur.realsense.processing.RSProcessingBlock;
-import ch.bildspur.realsense.processing.RSThresholdFilter;
+import ch.bildspur.realsense.processing.*;
 import ch.bildspur.realsense.sensor.RSSensor;
 import ch.bildspur.realsense.stream.DepthRSStream;
 import ch.bildspur.realsense.stream.PoseRSStream;
@@ -18,10 +15,13 @@ import org.intel.rs.frame.*;
 import org.intel.rs.pipeline.Config;
 import org.intel.rs.pipeline.Pipeline;
 import org.intel.rs.pipeline.PipelineProfile;
-import org.intel.rs.processing.*;
+import org.intel.rs.processing.Align;
 import org.intel.rs.sensor.Sensor;
 import org.intel.rs.sensor.SensorList;
-import org.intel.rs.types.*;
+import org.intel.rs.types.Extension;
+import org.intel.rs.types.Format;
+import org.intel.rs.types.Pose;
+import org.intel.rs.types.Stream;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
@@ -55,20 +55,12 @@ public class RealSenseCamera implements PConstants {
 
     // processors
     // todo: add syncer and pointcloud
-    private RSProcessingBlock<Colorizer> colorizer = new RSProcessingBlock<>();
+    private RSColorizer colorizer = new RSColorizer();
     private RSProcessingBlock<Align> align = new RSProcessingBlock<>();
 
-    // filter processors
-    private RSFilterBlock disparityTransform = new RSFilterBlock();
-    private RSFilterBlock holeFillingFilter = new RSFilterBlock();
-    private RSFilterBlock spatialFilter = new RSFilterBlock();
-    private RSFilterBlock temporalFilter = new RSFilterBlock();
-    private RSFilterBlock unitsTransform = new RSFilterBlock();
-    private RSFilterBlock zeroOrderInvalidationFilter = new RSFilterBlock();
-
     // processor lists
-    private RSProcessingBlock[] blocks = {colorizer, align};
-    private List<RSFilterBlock> filters = new ArrayList<>();
+    private final RSProcessingBlock[] blocks = {colorizer, align};
+    private final List<RSFilterBlock> filters = new ArrayList<>();
 
     // internal objects
     private FrameList frames;
@@ -92,6 +84,7 @@ public class RealSenseCamera implements PConstants {
 
     /**
      * Enable a new RealSense camera stream.
+     *
      * @param stream The stream to enable.
      */
     public void enableStream(RSStream stream) {
@@ -171,13 +164,15 @@ public class RealSenseCamera implements PConstants {
     }
 
     // Processors
-    public void enableColorizer() {
-        enableColorizer(ColorScheme.Jet);
+    public RSColorizer enableColorizer() {
+        return enableColorizer(ColorScheme.Jet);
     }
 
-    public void enableColorizer(ColorScheme scheme) {
-        colorizer.init(new Colorizer());
-        colorizer.setOption(Option.ColorScheme, scheme.getIndex());
+    public RSColorizer enableColorizer(ColorScheme scheme) {
+        colorizer.init();
+        colorizer.setColorScheme(scheme);
+
+        return colorizer;
     }
 
     public void enableAlign() {
@@ -206,65 +201,80 @@ public class RealSenseCamera implements PConstants {
         return filter;
     }
 
-    public void addDisparityTransform() {
-        addDisparityTransform(true);
+    public RSDisparityTransform addDisparityTransform() {
+        return addDisparityTransform(true);
     }
 
-    public void addDisparityTransform(boolean depthToDisparity) {
-        disparityTransform.init(new DisparityTransform(depthToDisparity));
-        addFilter(disparityTransform);
+    public RSDisparityTransform addDisparityTransform(boolean depthToDisparity) {
+        RSDisparityTransform filter = new RSDisparityTransform(depthToDisparity);
+        addFilter(filter);
+        return filter;
     }
 
-    public void addHoleFillingFilter() {
-        addHoleFillingFilter(HoleFillingType.FarestFromAround);
+    public RSHoleFillingFilter addHoleFillingFilter() {
+        return addHoleFillingFilter(HoleFillingType.FarestFromAround);
     }
 
-    public void addHoleFillingFilter(HoleFillingType fillingType) {
-        holeFillingFilter.init(new HoleFillingFilter());
-        addFilter(holeFillingFilter);
+    public RSHoleFillingFilter addHoleFillingFilter(HoleFillingType fillingType) {
+        RSHoleFillingFilter filter = new RSHoleFillingFilter();
+        addFilter(filter);
 
-        holeFillingFilter.setOption(Option.HolesFill, fillingType.getIndex());
+        filter.setHoleFillingType(fillingType);
+        return filter;
     }
 
-    public void addSpatialFilter() {
-        addSpatialFilter(2, 0.5f, 20, 0);
+    public RSSpatialFilter addSpatialFilter() {
+        return addSpatialFilter(2, 0.5f, 20, 0);
     }
 
-    public void addSpatialFilter(int filterMagnitude, float smoothAlpha, int smoothDelta, int holeFilling) {
-        spatialFilter.init(new SpatialFilter());
-        addFilter(spatialFilter);
+    public RSSpatialFilter addSpatialFilter(int filterMagnitude, float smoothAlpha, int smoothDelta, int holeFilling) {
+        RSSpatialFilter filter = new RSSpatialFilter();
+        addFilter(filter);
 
-        spatialFilter.setOption(Option.FilterMagnitude, filterMagnitude);
-        spatialFilter.setOption(Option.FilterSmoothAlpha, smoothAlpha);
-        spatialFilter.setOption(Option.FilterSmoothDelta, smoothDelta);
-        spatialFilter.setOption(Option.HolesFill, holeFilling);
+        filter.setMagnitude(filterMagnitude);
+        filter.setSmoothAlpha(smoothAlpha);
+        filter.setSmoothDelta(smoothDelta);
+        filter.setHoleFilling(holeFilling);
+
+        return filter;
     }
 
-    public void addTemporalFilter() {
-        addTemporalFilter(0.4f, 20, PersistencyIndex.ValidIn2_Last4);
+    public RSTemporalFilter addTemporalFilter() {
+        return addTemporalFilter(0.4f, 20, PersistencyIndex.ValidIn2_Last4);
     }
 
-    public void addTemporalFilter(float smoothAlpha, int smoothDelta, PersistencyIndex persistencyIndex) {
-        temporalFilter.init(new TemporalFilter());
-        addFilter(temporalFilter);
+    public RSTemporalFilter addTemporalFilter(float smoothAlpha, int smoothDelta, PersistencyIndex persistencyIndex) {
+        RSTemporalFilter filter = new RSTemporalFilter();
 
-        temporalFilter.setOption(Option.FilterSmoothAlpha, smoothAlpha);
-        temporalFilter.setOption(Option.FilterSmoothDelta, smoothDelta);
-        temporalFilter.setOption(Option.HolesFill, persistencyIndex.getIndex());
+        addFilter(filter);
+
+        filter.setSmoothAlpha(smoothAlpha);
+        filter.setSmoothDelta(smoothDelta);
+        filter.setPersistencyIndex(persistencyIndex);
+
+        return filter;
     }
 
-    public void addUnitsTransform() {
-        unitsTransform.init(new UnitsTransform());
-        addFilter(unitsTransform);
+    public RSUnitsTransform addUnitsTransform() {
+        RSUnitsTransform filter = new RSUnitsTransform();
+        addFilter(filter);
 
         // todo: are there no options available?
+
+        return filter;
     }
 
-    public void addZeroOrderInvalidationFilter() {
-        zeroOrderInvalidationFilter.init(new ZeroOrderInvalidationFilter());
-        addFilter(zeroOrderInvalidationFilter);
+    public RSZeroOrderInvalidationFilter addZeroOrderInvalidationFilter() {
+        RSZeroOrderInvalidationFilter filter = new RSZeroOrderInvalidationFilter();
+        addFilter(filter);
 
         // todo: are there no options available?
+
+        return filter;
+    }
+
+    public RSThresholdFilter addThresholdFilter() {
+        return addThresholdFilter(0.0f, 100.0f);
     }
 
     public RSThresholdFilter addThresholdFilter(float minDistance, float maxDistance) {
@@ -295,7 +305,7 @@ public class RealSenseCamera implements PConstants {
         // read frames from camera
         frames = pipeline.waitForFrames();
 
-        if(align.isEnabled()) {
+        if (align.isEnabled()) {
             FrameList temp = align.getBlock().process(frames);
             frames.release();
             frames = temp;
@@ -306,8 +316,8 @@ public class RealSenseCamera implements PConstants {
             DepthFrame frame = frames.getDepthFrame();
 
             // apply depth filter
-            if(!filters.isEmpty()) {
-                for(RSFilterBlock filter : filters) {
+            if (!filters.isEmpty()) {
+                for (RSFilterBlock filter : filters) {
                     DepthFrame temp = filter.getBlock().process(frame);
                     frame.release();
                     frame = temp;
@@ -315,7 +325,7 @@ public class RealSenseCamera implements PConstants {
             }
 
             // update colors if colorized is there
-            if(colorizer.isEnabled()) {
+            if (colorizer.isEnabled()) {
                 VideoFrame coloredFrame = colorizer.getBlock().colorize(frame);
                 depthStream.copyPixels(coloredFrame);
                 coloredFrame.release();
@@ -342,7 +352,7 @@ public class RealSenseCamera implements PConstants {
             frame.release();
         }
 
-        if(poseStream.isEnabled()) {
+        if (poseStream.isEnabled()) {
             PoseFrame frame = frames.getPoseFrame();
 
             frame.release();
@@ -363,7 +373,7 @@ public class RealSenseCamera implements PConstants {
     }
 
     private void checkRunning() {
-        if(running)
+        if (running)
             return;
 
         RuntimeException ex = new RuntimeException("Camera is not running.");
@@ -397,6 +407,7 @@ public class RealSenseCamera implements PConstants {
     /**
      * Returns a list of created devices.
      * All the devices are created, so it is mandatory to close the devices again to be reused by the library.
+     *
      * @return List of created devices.
      */
     public static Device[] getDevices() {
@@ -404,7 +415,7 @@ public class RealSenseCamera implements PConstants {
         int count = deviceList.count();
 
         Device[] devices = new Device[count];
-        for(int i = 0; i < devices.length; i++)
+        for (int i = 0; i < devices.length; i++)
             devices[i] = deviceList.get(i);
 
         deviceList.release();
@@ -413,6 +424,7 @@ public class RealSenseCamera implements PConstants {
 
     /**
      * Returns device used by pipeline.
+     *
      * @return Returns device used by pipeline.
      */
     public Device getDevice() {
@@ -422,6 +434,7 @@ public class RealSenseCamera implements PConstants {
 
     /**
      * Returns advanced device used by pipeline.
+     *
      * @return Returns advanced device used by pipeline.
      */
     public AdvancedDevice getAdvancedDevice() {
@@ -514,16 +527,17 @@ public class RealSenseCamera implements PConstants {
         config.release();
         pipeline.release();
 
-        for(RSProcessingBlock block : blocks)
+        for (RSProcessingBlock block : blocks)
             block.release();
 
-        for(RSFilterBlock filter : filters)
+        for (RSFilterBlock filter : filters)
             filter.release();
 
         context.release();
     }
 
     // Image / Data Getters
+
     /**
      * Returns depth at specific position in the depth frame.
      * Returns -1 if no depth frame was captured.
@@ -545,7 +559,7 @@ public class RealSenseCamera implements PConstants {
         if (depth == null)
             return -1;
 
-        if(x < 0 || x >= depth.getWidth() || y < 0 || y > depth.getHeight())
+        if (x < 0 || x >= depth.getWidth() || y < 0 || y > depth.getHeight())
             return -3;
 
         float distance = depth.getDistance(x, y);
@@ -555,6 +569,7 @@ public class RealSenseCamera implements PConstants {
 
     /**
      * Returns 2-dimensional short array which contains the depth buffer.
+     *
      * @return Y / X short array of the raw depth buffer.
      */
     public short[][] getDepthData() {
@@ -613,8 +628,8 @@ public class RealSenseCamera implements PConstants {
         SensorList sensors = getDevice().querySensors();
         Sensor sensor = null;
 
-        for(Sensor s : sensors) {
-            if(s.isExtendableTo(Extension.DepthSensor)) {
+        for (Sensor s : sensors) {
+            if (s.isExtendableTo(Extension.DepthSensor)) {
                 sensor = s;
                 break;
             }
@@ -628,8 +643,8 @@ public class RealSenseCamera implements PConstants {
         SensorList sensors = getDevice().querySensors();
         Sensor sensor = null;
 
-        for(Sensor s : sensors) {
-            if(s.getStreamProfiles().get(0).getStream() == Stream.Color) {
+        for (Sensor s : sensors) {
+            if (s.getStreamProfiles().get(0).getStream() == Stream.Color) {
                 sensor = s;
                 break;
             }
@@ -665,7 +680,7 @@ public class RealSenseCamera implements PConstants {
         return running;
     }
 
-    public RSProcessingBlock<Colorizer> getColorizer() {
+    public RSColorizer getColorizer() {
         return colorizer;
     }
 }

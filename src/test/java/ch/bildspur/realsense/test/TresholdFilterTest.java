@@ -2,6 +2,7 @@ package ch.bildspur.realsense.test;
 
 
 import ch.bildspur.realsense.RealSenseCamera;
+import ch.bildspur.realsense.processing.RSColorizer;
 import ch.bildspur.realsense.processing.RSThresholdFilter;
 import ch.bildspur.realsense.type.ColorScheme;
 import processing.core.PApplet;
@@ -22,6 +23,8 @@ public class TresholdFilterTest extends PApplet {
     RealSenseCamera camera = new RealSenseCamera(this);
     RSThresholdFilter filter;
     float window = 1.0f;
+
+    RSColorizer colorizer;
 
     public static void main(String... args) {
         TresholdFilterTest sketch = new TresholdFilterTest();
@@ -47,7 +50,7 @@ public class TresholdFilterTest extends PApplet {
         camera.enableDepthStream();
         camera.enableColorStream();
 
-        camera.enableColorizer(ColorScheme.Classic);
+        colorizer = camera.enableColorizer(ColorScheme.Classic);
         filter = camera.addThresholdFilter(0.0f, window);
 
         camera.start();
@@ -62,6 +65,12 @@ public class TresholdFilterTest extends PApplet {
         float distance = map(mouseX, 0, width, 0, 5);
         filter.setMinDistance(distance);
         filter.setMaxDistance(distance + window);
+
+        if(mouseY > height * 0.5) {
+            colorizer.setColorScheme(ColorScheme.Classic);
+        } else {
+            colorizer.setColorScheme(ColorScheme.Jet);
+        }
 
         // show both streams
         image(camera.getDepthImage(), 0, 0, VIEW_WIDTH, VIEW_HEIGHT);
