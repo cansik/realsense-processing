@@ -22,7 +22,7 @@ public class TresholdFilterTest extends PApplet {
 
     RealSenseCamera camera = new RealSenseCamera(this);
     RSThresholdFilter filter;
-    float window = 1.0f;
+    float window = 10.0f;
 
     RSColorizer colorizer;
 
@@ -39,10 +39,9 @@ public class TresholdFilterTest extends PApplet {
     public void setup() {
         frameRate(FRAME_RATE);
 
-        if(RealSenseCamera.isDeviceAvailable()) {
+        if (RealSenseCamera.isDeviceAvailable()) {
             println("Camera found!");
-        }
-        else {
+        } else {
             println("No camera available!");
             exit();
         }
@@ -66,7 +65,7 @@ public class TresholdFilterTest extends PApplet {
         filter.setMinDistance(distance);
         filter.setMaxDistance(distance + window);
 
-        if(mouseY > height * 0.5) {
+        if (mouseY > height * 0.5) {
             colorizer.setColorScheme(ColorScheme.Classic);
         } else {
             colorizer.setColorScheme(ColorScheme.Jet);
@@ -78,8 +77,8 @@ public class TresholdFilterTest extends PApplet {
 
         fill(255, 255, 255);
         textAlign(LEFT, CENTER);
-        text("Depth Stream", 20, VIEW_HEIGHT  + 8);
-        text("Color Stream", VIEW_WIDTH + 20, VIEW_HEIGHT  + 8);
+        text("Depth Stream", 20, VIEW_HEIGHT + 8);
+        text("Color Stream", VIEW_WIDTH + 20, VIEW_HEIGHT + 8);
         surface.setTitle("RealSense Processing - FPS: " + Math.round(frameRate));
     }
 }
