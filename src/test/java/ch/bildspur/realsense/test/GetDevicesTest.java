@@ -22,7 +22,7 @@ public class GetDevicesTest extends PApplet {
     }
 
     public void setup() {
-        if(camera.isDeviceAvailable()) {
+        if(RealSenseCamera.isDeviceAvailable()) {
             println("Camera found!");
         }
         else {
@@ -31,16 +31,16 @@ public class GetDevicesTest extends PApplet {
         }
 
         // list all serial numbers
-        Device[] devices = camera.getDevices();
+        Device[] devices = RealSenseCamera.getDevices();
 
-        println("Cameras: " + camera.getDeviceCount());
+        println("Cameras: " + RealSenseCamera.getDeviceCount());
 
         for(Device d : devices) {
             println(d.getSerialNumber());
             d.close();
         }
 
-        println("Cameras: " + camera.getDeviceCount());
+        println("Cameras: " + RealSenseCamera.getDeviceCount());
 
         camera.enableColorStream();
 

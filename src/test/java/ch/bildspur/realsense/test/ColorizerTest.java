@@ -34,7 +34,7 @@ public class ColorizerTest extends PApplet {
     public void setup() {
         frameRate(FRAME_RATE);
 
-        if(camera.isDeviceAvailable()) {
+        if(RealSenseCamera.isDeviceAvailable()) {
             println("Camera found!");
         }
         else {
