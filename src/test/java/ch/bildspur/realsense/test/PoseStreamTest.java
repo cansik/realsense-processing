@@ -51,7 +51,7 @@ public class PoseStreamTest extends PApplet {
         // display pose data
         fill(255, 255, 255);
         textAlign(CENTER, CENTER);
-        text(pose.getRotation().getX(),  width / 2, height / 2);
+        text(pose.getRotation()[0],  width / 2, height / 2);
         surface.setTitle("RealSense Processing - FPS: " + Math.round(frameRate));
     }
 }

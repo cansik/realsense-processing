@@ -43,7 +43,7 @@ public class TresholdFilterTest extends PApplet {
             println("Camera found!");
         } else {
             println("No camera available!");
-            exit();
+            System.exit(1);
         }
 
         camera.enableDepthStream();

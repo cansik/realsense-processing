@@ -7,7 +7,7 @@ Intel RealSense 2 support for the [Processing](https://processing.org/) framewor
 
 **Intel RealSense for Procesing** is a port of the **[Intel RealSense](https://github.com/IntelRealSense/librealsense)** library for processing. With this library it is possible to use the Intel RealSense T200 / D400 / D500 camera series within processing. The idea is **not** to expose the full API into Processing, however a simple and convenient way to work with RealSense devices. For full API support switching over to the underlying [java wrapper](https://github.com/cansik/librealsense-java) is recommended.
 
-Supported Intel RealSense Version: [2.40.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.40.0)
+Supported Intel RealSense Version: [2.44.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.44.0)
 
 #### Important ⚠️
 
@@ -50,7 +50,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.cansik:realsense-processing:2.3.0'
+    implementation 'com.github.cansik:realsense-processing:2.4.0'
 }
 ```
 
@@ -218,6 +218,24 @@ camera.addTemporalFilter(0.4f, 20, PersistencyIndex.ValidIn2_Last4);
 camera.addUnitsTransform();
 camera.addZeroOrderInvalidationFilter();
 ```
+
+#### Filter Options
+
+To change the initial sensor options it is possible to get the filter block from the add method and use the methods provided there. Here an example on how to do use the threshold filter.
+
+```processing
+// include the processing package
+import ch.bildspur.realsense.processing.*;
+
+// in setup
+RSThresholdFilter thresholdFilter = camera.addThresholdFilter();
+
+// in draw
+thresholdFilter.setMinDistance(5.0);
+thresholdFilter.setMaxDistance(8.0);
+```
+
+Check out the [ControlThresholdFilter](examples/ControlThresholdFilter/ControlThresholdFilter.pde) example as well.
 
 ### Sensor Options
 A RealSense camera usually contains multiple sensors, each with it's unique options and settings. Currently supported are only the `Depth` and `RGB` sensor. Here is an example on how to set the `Enable Auto Exposure` option on the RGB sensor.
