@@ -1,6 +1,7 @@
 package ch.bildspur.realsense;
 
 import ch.bildspur.realsense.processing.*;
+import ch.bildspur.realsense.sensor.RSDepthSensor;
 import ch.bildspur.realsense.sensor.RSSensor;
 import ch.bildspur.realsense.stream.DepthRSStream;
 import ch.bildspur.realsense.stream.PoseRSStream;
@@ -624,7 +625,7 @@ public class RealSenseCamera implements PConstants {
         return new RSSensor(sensor);
     }
 
-    public RSSensor getDepthSensor() {
+    public RSDepthSensor getDepthSensor() {
         SensorList sensors = getDevice().querySensors();
         Sensor sensor = null;
 
@@ -636,7 +637,7 @@ public class RealSenseCamera implements PConstants {
         }
 
         sensors.release();
-        return new RSSensor(sensor);
+        return new RSDepthSensor(sensor);
     }
 
     public RSSensor getRGBSensor() {

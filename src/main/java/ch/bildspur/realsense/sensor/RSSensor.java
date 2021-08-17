@@ -5,7 +5,7 @@ import org.intel.rs.sensor.Sensor;
 import org.intel.rs.types.Option;
 
 public class RSSensor {
-    private Sensor sensor;
+    protected Sensor sensor;
 
     public RSSensor(Sensor sensor) {
         this.sensor = sensor;
