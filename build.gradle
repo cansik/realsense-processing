@@ -8,7 +8,7 @@ version '2.4.1'
 
 sourceCompatibility = 1.8
 
-def rsVersion = '2.44.0-0.4.2'
+def rsVersion = '74e5529a09'
 
 repositories {
     mavenCentral()

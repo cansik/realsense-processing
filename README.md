@@ -172,6 +172,16 @@ void draw {
 
 It is important to notice that usually depth and color streams are not aligned, which makes it impossible to measure depth on a color image. For this problem you will have to [align](#Alignment) the two streams.
 
+### Projected Point
+To project a point into the camera space by using the depth intrinsics, it is possible to use the method `getProjectedPoint` which returns a `PVector` containig the coordinates.
+
+```
+void draw {
+    //...
+    PVector vertex = camera.getProjectedPoint(mouseX, mouseY)
+}
+```
+
 ### Depth Data
 To work with the raw depth data it is possible to enable the depth stream without the colorizer filter and start reading the depth data by using `getDepthData()`. This returns a 2-dimensional array of `short` with the `Y / X` order.
 

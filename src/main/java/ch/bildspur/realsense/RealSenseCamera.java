@@ -19,13 +19,13 @@ import org.intel.rs.pipeline.PipelineProfile;
 import org.intel.rs.processing.Align;
 import org.intel.rs.sensor.Sensor;
 import org.intel.rs.sensor.SensorList;
-import org.intel.rs.types.Extension;
-import org.intel.rs.types.Format;
-import org.intel.rs.types.Pose;
-import org.intel.rs.types.Stream;
+import org.intel.rs.stream.VideoStreamProfile;
+import org.intel.rs.types.*;
+import org.intel.rs.util.Utils;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
+import processing.core.PVector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -566,6 +566,50 @@ public class RealSenseCamera implements PConstants {
         float distance = depth.getDistance(x, y);
         depth.release();
         return distance;
+    }
+
+    /**
+     * Returns depth at specific position in the depth frame.
+     * Returns null if something did not work.
+     *
+     * @param x X coordinate.
+     * @param y Y coordinate.
+     * @return 3D vector containing the vertex information.
+     */
+    public PVector getProjectedPoint(int x, int y) {
+        checkRunning();
+
+        if (frames == null)
+            return null;
+
+        DepthFrame depth = frames.getDepthFrame();
+
+        if (depth == null)
+            return null;
+
+        // read depth
+        if (x < 0 || x >= depth.getWidth() || y < 0 || y > depth.getHeight()) {
+            depth.release();
+            return null;
+        }
+
+        float distance = depth.getDistance(x, y);
+
+        // project pixel
+        VideoStreamProfile profile = depth.getProfileEx();
+        Intrinsics intrinsics = profile.getIntrinsics();
+
+        Pixel pixel = new Pixel(x, y);
+
+        Vertex vertex = Utils.deprojectPixelToPoint(intrinsics, pixel, distance);
+        PVector v = new PVector(vertex.getX(), vertex.getY(), vertex.getZ());
+
+        // cleanup
+        depth.release();
+        profile.release();
+        intrinsics.release();
+
+        return v;
     }
 
     /**
