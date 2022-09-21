@@ -28,13 +28,14 @@ void draw()
   // show color image
   image(camera.getColorImage(), 0, 0);
   
-  // measure distance
-  float distance = camera.getDistance(mouseX, mouseY);
+  // measure distnace
+  PVector vertex = camera.getProjectedPoint(mouseX, mouseY);
+  String vertexText = "X: " + nf(vertex.x, 0, 2) + " Y: " + nf(vertex.y, 0, 2) + " Z: " + nf(vertex.z, 0, 2);
   
   fill(0, 255, 255);
   textSize(20);
   textAlign(LEFT, TOP);
-  text(nf(distance, 0, 2) + "m", mouseX + 5, mouseY + 5);
+  text(vertexText, mouseX + 5, mouseY + 5);
   
   stroke(0, 255, 255);
   noFill();

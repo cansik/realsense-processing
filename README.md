@@ -50,7 +50,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.cansik:realsense-processing:2.4.0'
+    implementation 'com.github.cansik:realsense-processing:2.4.1'
 }
 ```
 
@@ -181,6 +181,8 @@ void draw {
     PVector vertex = camera.getProjectedPoint(mouseX, mouseY)
 }
 ```
+
+For more information have a look at the [ProjectedPoint example](https://github.com/cansik/realsense-processing/blob/master/examples/ProjectedPoint/ProjectedPoint.pde).
 
 ### Depth Data
 To work with the raw depth data it is possible to enable the depth stream without the colorizer filter and start reading the depth data by using `getDepthData()`. This returns a 2-dimensional array of `short` with the `Y / X` order.
