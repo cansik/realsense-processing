@@ -596,7 +596,7 @@ public class RealSenseCamera implements PConstants {
         float distance = depth.getDistance(x, y);
 
         // project pixel
-        VideoStreamProfile profile = depth.getProfileEx();
+        VideoStreamProfile profile = new VideoStreamProfile(depth.getProfile().getInstance());
         Intrinsics intrinsics = profile.getIntrinsics();
 
         Pixel pixel = new Pixel(x, y);
