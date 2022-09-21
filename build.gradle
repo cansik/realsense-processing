@@ -1,14 +1,14 @@
 plugins {
     id 'java-library'
-    id 'org.bytedeco.gradle-javacpp-platform' version "1.5.4"
+    id 'org.bytedeco.gradle-javacpp-platform' version "1.5.7"
 }
 
 group 'ch.bildspur'
-version '2.4.0'
+version '2.4.1'
 
 sourceCompatibility = 1.8
 
-def rsVersion = '2.44.0-0.4.1'
+def rsVersion = '2.44.0-0.4.2'
 
 repositories {
     mavenCentral()
@@ -16,35 +16,32 @@ repositories {
 }
 
 configurations {
-    jar.archiveName = "${outputName}.jar"
-
-    processing
-    implementation.extendsFrom processing
+    jar.archiveName = outputName + '.jar'
 }
 
 javadoc {
     source = sourceSets.main.allJava
-    classpath = configurations.compile
 }
 
 dependencies {
     // release
-    compile "com.github.cansik:librealsense-java:$rsVersion"
+    implementation "com.github.cansik:librealsense-java:$rsVersion"
 
     // compile
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testImplementation group: 'junit', name: 'junit', version: '4.13.1'
 
     // processing
-    processing group: 'org.processing', name: 'core', version: '3.3.7'
-    processing group: 'org.jogamp.jogl', name: 'jogl-all-main', version: '2.3.2'
-    processing group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version: '2.3.2'
+    implementation fileTree(include: ["core.jar", "jogl-all-main.jar", "gluegen-rt-main.jar"], dir: 'core-libs')
 }
 
 task fatJar(type: Jar) {
-    archiveName = "$outputName-complete.jar"
-    dependsOn configurations.runtime
+    archiveFileName = "$outputName-complete.jar"
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn configurations.runtimeClasspath
     from {
-        (configurations.runtime - configurations.processing).collect {
+        (configurations.runtimeClasspath).filter( {! (it.name =~ /core.jar/ ||
+                it.name =~ /jogl-all-main.jar/ ||
+                it.name =~ /gluegen-rt-main.jar/)}).collect {
             it.isDirectory() ? it : zipTree(it)
         }
     }

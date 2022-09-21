@@ -2,14 +2,36 @@
 def releaseRoot = "$rootDir/release"
 
 def releaseName = "$outputName$outputNamePostfix-$version"
-def releaseDirectory = "$releaseRoot/$outputName"
+def releaseDirectory = "$releaseRoot/$releaseName"
+def processingVersion = generateProcessingVersion("$version").toString()
+
+static def generateProcessingVersion(String version) {
+    def tokens = version.split('\\.')
+    def sum = 0
+    def count = 1
+
+    for (String token : tokens.reverse()) {
+        try {
+            def value = token as Double
+            sum += value * count
+            count *= 100
+        } catch (ignored) {
+        }
+    }
+
+    return sum.toInteger()
+}
 
 task releaseProcessingLib {
     dependsOn {
         clean
         build
         javadoc
-        fatJar
+        if (project.hasProperty("disable-fatjar")) {
+            jar
+        } else {
+            fatJar
+        }
     }
 
     finalizedBy 'packageRelease', 'renameRelease'
@@ -17,28 +39,47 @@ task releaseProcessingLib {
     doFirst {
         println "releasing library $outputName..."
 
-        if (project.hasProperty("cuda")) {
-            println "CUDA support enabled!"
-        }
+        // printing current jvm
+        def currentJvm = org.gradle.internal.jvm.Jvm.current()
+        println currentJvm
 
         println("cleaning release...")
         project.delete(files(
                 "$releaseDirectory",
-                "$releaseRoot/$releaseName",
-                "$releaseRoot/${outputName}.zip",
-                "$releaseRoot/${outputName}.txt"
+                "$releaseRoot/${releaseName}.zip",
+                "$releaseRoot/${releaseName}.txt"
         ))
     }
 
     doLast {
         println "creating package..."
 
-        println "copy library..."
-        project.copy {
-            from "$buildDir/libs/$outputName-complete.jar"
-            into "$releaseDirectory/library"
-            rename "$outputName-complete.jar", "${outputName}.jar"
+        if (project.hasProperty("disable-fatjar")) {
+            println "copy library..."
+            project.copy {
+                from "$buildDir/libs/${outputName}.jar"
+                into "$releaseDirectory/library"
+            }
+
+            println "copy dependencies..."
+            project.copy {
+                from configurations.runtimeClasspath
+                into "$releaseDirectory/library"
+            }
+
+            // Need to delete the Processing jar explicilty, at least when including them as fileTree dependencies
+            delete "$releaseDirectory/library/core.jar"
+            delete "$releaseDirectory/library/jogl-all-main.jar"
+            delete "$releaseDirectory/library/gluegen-rt-main.jar"
+        } else {
+            println "copy fatjar library..."
+            project.copy {
+                from "$buildDir/libs/$outputName-complete.jar"
+                into "$releaseDirectory/library"
+                rename "$outputName-complete.jar", "${outputName}.jar"
+            }
         }
+
 
         println "copy assets (only if necessary)..."
         project.copy {
@@ -50,6 +91,14 @@ task releaseProcessingLib {
             exclude "*.DS_Store"
         }
 
+        /*
+        println "copy data..."
+        project.copy {
+            from "data"
+            into "$releaseDirectory/library"
+        }
+        */
+
         println "copy javadoc..."
         project.copy {
             from "$buildDir/docs/javadoc"
@@ -60,7 +109,6 @@ task releaseProcessingLib {
         project.copy {
             from("$rootDir") {
                 include "README.md",
-                        "library.properties",
                         "readme/**",
                         "examples/**",
                         "src/**"
@@ -69,9 +117,22 @@ task releaseProcessingLib {
             exclude "*.DS_Store", "**/networks/**"
         }
 
+        println "copy library properties..."
+        project.copy {
+            from("$rootDir") {
+                include "library.properties"
+            }
+            into "$releaseDirectory"
+            exclude "*.DS_Store"
+            filter {
+                it.replace('${version}', "$processingVersion")
+                        .replace('${prettyVersion}', "$project.version")
+            }
+        }
+
         println "copy repository library.txt..."
         project.copy {
-            from "$rootDir/library.properties"
+            from "$releaseDirectory/library.properties"
             into "$releaseRoot"
             rename "library.properties", "${outputName}.txt"
         }
@@ -90,8 +151,4 @@ task packageRelease(type: Zip) {
 
 task renameRelease {
     mustRunAfter packageRelease
-
-    doLast {
-        file("$releaseRoot/${outputName}").renameTo(file("$releaseRoot/${releaseName}"))
-    }
 }
