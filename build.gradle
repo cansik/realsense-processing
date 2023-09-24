@@ -1,14 +1,15 @@
 plugins {
     id 'java-library'
-    id 'org.bytedeco.gradle-javacpp-platform' version "1.5.7"
+    id 'org.bytedeco.gradle-javacpp-platform' version "$javacppVersion"
 }
 
 group 'ch.bildspur'
-version '2.4.3'
+version '2.5.0'
 
 sourceCompatibility = 1.8
 
-def rsVersion = 'v2.44.0-0.4.3'
+def rsVersion = 'v2.53.1-0.6.0'
+
 
 repositories {
     mavenCentral()
@@ -26,6 +27,14 @@ javadoc {
 dependencies {
     // release
     implementation "com.github.cansik:librealsense-java:$rsVersion"
+
+    // todo: check why transitive dependencies currently do not work!
+    // java cpp
+    implementation group: 'org.bytedeco', name: 'javacpp', version: "$javacppVersion"
+
+    // librealsense2
+    implementation group: 'org.bytedeco', name: 'librealsense2', version: '2.53.1-1.5.9'
+    implementation group: 'org.bytedeco', name: 'librealsense2-platform', version: '2.53.1-1.5.9'
 
     // compile
     testImplementation group: 'junit', name: 'junit', version: '4.13.1'

@@ -7,7 +7,7 @@ Intel RealSense 2 support for the [Processing](https://processing.org/) framewor
 
 **Intel RealSense for Procesing** is a port of the **[Intel RealSense](https://github.com/IntelRealSense/librealsense)** library for processing. With this library it is possible to use the Intel RealSense T200 / D400 / D500 camera series within processing. The idea is **not** to expose the full API into Processing, however a simple and convenient way to work with RealSense devices. For full API support switching over to the underlying [java wrapper](https://github.com/cansik/librealsense-java) is recommended.
 
-Supported Intel RealSense Version: [2.44.0](https://github.com/IntelRealSense/librealsense/releases/tag/v2.44.0)
+Supported Intel RealSense Version: [2.53.1](https://github.com/IntelRealSense/librealsense/releases/tag/v2.53.1)
 
 #### Important ⚠️
 
@@ -50,7 +50,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.cansik:realsense-processing:2.4.3'
+    implementation 'com.github.cansik:realsense-processing:2.5.0'
 }
 ```
 
