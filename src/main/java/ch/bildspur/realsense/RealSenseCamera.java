@@ -308,7 +308,7 @@ public class RealSenseCamera implements PConstants {
 
         if (align.isEnabled()) {
             FrameList temp = align.getBlock().process(frames);
-            frames.release();
+            if (frames != null) frames.release();
             frames = temp;
         }
 
@@ -320,7 +320,7 @@ public class RealSenseCamera implements PConstants {
             if (!filters.isEmpty()) {
                 for (RSFilterBlock filter : filters) {
                     DepthFrame temp = filter.getBlock().process(frame);
-                    frame.release();
+                    if (frame != null) frame.release();
                     frame = temp;
                 }
             }
@@ -332,31 +332,31 @@ public class RealSenseCamera implements PConstants {
                 coloredFrame.release();
             }
 
-            frame.release();
+            if (frame != null) frame.release();
         }
 
         if (colorStream.isEnabled()) {
             VideoFrame frame = frames.getColorFrame();
             colorStream.copyPixels(frame);
-            frame.release();
+            if (frame != null) frame.release();
         }
 
         if (firstIRStream.isEnabled()) {
             VideoFrame frame = getStreamByIndex(frames, Stream.Infrared, Format.Any, firstIRStream.getIndex());
             firstIRStream.copyPixels(frame);
-            frame.release();
+            if (frame != null) frame.release();
         }
 
         if (secondIRStream.isEnabled()) {
             VideoFrame frame = getStreamByIndex(frames, Stream.Infrared, Format.Any, secondIRStream.getIndex());
             secondIRStream.copyPixels(frame);
-            frame.release();
+            if (frame != null) frame.release();
         }
 
         if (poseStream.isEnabled()) {
             PoseFrame frame = frames.getPoseFrame();
 
-            frame.release();
+            if (frame != null) frame.release();
         }
     }
 
@@ -368,7 +368,7 @@ public class RealSenseCamera implements PConstants {
                     && frame.getProfile().getIndex() == index) {
                 return (T) frame;
             }
-            frame.release();
+            if (frame != null) frame.release();
         }
         return null;
     }
@@ -620,9 +620,13 @@ public class RealSenseCamera implements PConstants {
     public short[][] getDepthData() {
         checkRunning();
 
-        DepthFrame frame = frames.getDepthFrame();
-        depthStream.updateDepthData(frame);
-        frame.release();
+        if (frames != null) {
+            DepthFrame frame = frames.getDepthFrame();
+            if (frame != null) {
+                depthStream.updateDepthData(frame);
+                frame.release();
+            }
+        }
         return depthStream.getData();
     }
 
